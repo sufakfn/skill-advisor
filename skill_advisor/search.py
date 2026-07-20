@@ -24,43 +24,9 @@ SKILLS_SH_API = "https://skills.sh/api/search"
 CLAWHUB_API = "https://clawhub.ai/api/v1/skills"
 
 
-def _calc_weighted_score(relevance, stars):
-    """
-    计算加权排序分数
-
-    公式: final_score = relevance_normalized * 0.7 + stars_normalized * 0.3
-
-    relevance: FTS5 bm25 (负值，越小越好) 或 0 (LIKE 模式)
-    stars: GitHub stars 数量
-    """
-    # 将 relevance 归一化到 0-1
-    if relevance < 0:
-        # FTS5 bm25: 转换为 0-1 (取绝对值后反转)
-        rel_score = 1.0 / (1.0 + abs(relevance))
-    else:
-        # LIKE 模式或无相关性分数
-        rel_score = 0.5
-
-    # Stars 归一化到 0-1 (上限 1000)
-    stars_score = min(stars or 0, 1000) / 1000.0
-
-    return rel_score * 0.7 + stars_score * 0.3
-
-
-def _rerank_with_stars(results):
-    """对结果进行 stars 加权重排序"""
-    for r in results:
-        r["_score"] = _calc_weighted_score(
-            r.get("relevance", 0),
-            r.get("stars", 0)
-        )
-    results.sort(key=lambda x: x["_score"], reverse=True)
-    return results
-
-
 def search_local(query, limit=10, db_path=None):
     """
-    本地 SQLite 搜索（带 stars 加权排序）
+    本地 SQLite 搜索
 
     参数:
         query: 搜索词 (中英文均可)
@@ -92,10 +58,10 @@ def search_local(query, limit=10, db_path=None):
                 SELECT id, name, description, source, installs, stars,
                        topics, urls, quality_score, 0 AS relevance
                 FROM skills_merged
-                WHERE verified = 1 AND (name LIKE ? OR name_aliases LIKE ? OR description LIKE ? OR topics LIKE ?)
+                WHERE name LIKE ? OR name_aliases LIKE ? OR description LIKE ? OR topics LIKE ?
                 ORDER BY quality_score DESC, installs DESC
                 LIMIT ?
-            """, (like_pattern, like_pattern, like_pattern, like_pattern, limit * 3)).fetchall()
+            """, (like_pattern, like_pattern, like_pattern, like_pattern, limit)).fetchall()
         else:
             # 英文长查询 → FTS5 trigram
             rows = conn.execute("""
@@ -104,10 +70,10 @@ def search_local(query, limit=10, db_path=None):
                        bm25(skills_fts) AS relevance
                 FROM skills_fts fts
                 JOIN skills_merged m ON m.id = fts.rowid
-                WHERE verified = 1 AND skills_fts MATCH ?
+                WHERE skills_fts MATCH ?
                 ORDER BY relevance
                 LIMIT ?
-            """, (query, limit * 3)).fetchall()
+            """, (query, limit)).fetchall()
 
         for row in rows:
             if row["id"] not in seen_ids:
@@ -117,8 +83,8 @@ def search_local(query, limit=10, db_path=None):
         pass
 
     # 策略2: 中文拆词补充
-    if has_chinese and len(results) < limit * 3 and len(query) > 2:
-        remaining = limit * 3 - len(results)
+    if has_chinese and len(results) < limit and len(query) > 2:
+        remaining = limit - len(results)
         cn_chars = re.findall(r'[一-鿿]', query)
         words = set()
         words.add(query)
@@ -140,7 +106,7 @@ def search_local(query, limit=10, db_path=None):
                 SELECT id, name, description, source, installs, stars,
                        topics, urls, quality_score, 0 AS relevance
                 FROM skills_merged
-                WHERE verified = 1 AND ({conditions}) AND id NOT IN ({not_in})
+                WHERE ({conditions}) AND id NOT IN ({not_in})
                 ORDER BY quality_score DESC, installs DESC
                 LIMIT ?
             """, params).fetchall()
@@ -153,12 +119,7 @@ def search_local(query, limit=10, db_path=None):
             pass
 
     conn.close()
-
-    # Stars 加权重排序
-    results = _rerank_with_stars(results)
-
-    # 返回前 limit 个
-    return results[:limit]
+    return results
 
 
 def search_skills(query, limit=10, online=True, db_path=None):
@@ -179,20 +140,25 @@ def search_skills(query, limit=10, online=True, db_path=None):
     # 1. 本地搜索
     local_results = search_local(query, limit, db_path)
 
-    # 2. 本地未命中 → 在线搜索
+    # 2. 本地结果不足 → 尝试向量语义搜索
+    vector_results = []
+    if len(local_results) < min(3, limit):
+        try:
+            vector_results = search_hybrid(query, limit=limit, db_path=db_path)
+            # search_hybrid 返回 dict，提取其中的 results 列表
+            if isinstance(vector_results, dict):
+                vector_results = vector_results.get("results", [])
+        except Exception:
+            vector_results = []
+
+    # 3. 本地未命中 → 在线搜索
     online_results = []
-    if online and len(local_results) < min(3, limit):
+    if online and len(local_results) < min(3, limit) and not vector_results:
         online_results = _search_skills_sh(query, limit)
         if not online_results:
             online_results = _search_clawhub(query, limit)
 
     elapsed = (time.time() - start) * 1000
-
-    # Add safety markers
-    for r in local_results:
-        r["safety"] = _check_safety(r.get("urls", []))
-    for r in online_results:
-        r["safety"] = _check_safety(r.get("urls", []))
 
     if local_results and online_results:
         source = "local+online"
@@ -264,121 +230,101 @@ def _search_clawhub(query, limit=10):
     except Exception:
         return []
 
-def _check_safety(urls):
-    """Quick safety check based on source URLs"""
-    safe_domains = ["github.com", "gitlab.com", "clawhub.ai"]
-    if urls:
-        for u in urls:
-            u_str = str(u)
-            for d in safe_domains:
-                if d in u_str:
-                    return "safe"
-    return "unverified"
 
-
-# === 向量语义搜索 (Phase P0-1) ===
-
-_vec_model = None
-_vec_db_path = None
-
-def _get_vec_model():
-    """懒加载嵌入模型（只加载一次）"""
-    global _vec_model
-    if _vec_model is None:
-        from sentence_transformers import SentenceTransformer
-        _vec_model = SentenceTransformer("intfloat/multilingual-e5-small")
-    return _vec_model
-
-def _get_vec_db(db_path):
-    """获取加载了 sqlite-vec 的数据库连接"""
-    global _vec_db_path
-    if db_path is None:
-        db_path = DEFAULT_DB_PATH
-    conn = sqlite3.connect(str(db_path))
-    conn.row_factory = sqlite3.Row
-    # 检查是否有向量表
-    has_vec = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='skills_vec'").fetchone()
-    if not has_vec:
-        conn.close()
-        return None
-    # 加载 sqlite-vec 扩展
-    conn.enable_load_extension(True)
-    try:
-        import sqlite_vec
-        sqlite_vec.load(conn)
-    except Exception:
-        pass
-    conn.enable_load_extension(False)
-    _vec_db_path = str(db_path)
-    return conn
-
-def search_semantic(query, limit=10, db_path=None):
+def search_hybrid(query, limit=10, db_path=None):
     """
-    向量语义搜索
+    混合搜索：向量召回 + FTS5 + LIKE，三路结果融合。
 
-    使用 multilingual-e5-small 模型生成查询嵌入，
-    通过 sqlite-vec 进行 KNN 搜索。
+    三路召回策略：
+      1. 向量召回（vector_search）→ 语义理解，命中模糊需求
+      2. FTS5 召回（search_local 现有逻辑）→ 精确关键词匹配
+      3. LIKE 兜底（search_local 中的中文逻辑）→ 防止遗漏
 
-    参数:
-        query: 自然语言查询（中英文均可）
-        limit: 返回数量
-        db_path: 数据库路径
+    融合规则：
+      - 三路结果按 normalized_name 去重
+      - 向量命中的结果排在前面
+      - 最终按 relevance + quality_score 重排
 
-    返回: {query, local_results, total, elapsed_ms, source}
+    返回: {
+        "results": [...],
+        "sources": {"vector": n, "fts5+like": n},
+        "elapsed_ms": float,
+        "engine": "vss" | "cosine" | "fts5-only"
+    }
     """
     start = time.time()
 
-    if db_path is None:
-        db_path = DEFAULT_DB_PATH
+    # 1. FTS5 + LIKE 召回（现有逻辑）
+    fts_results = search_local(query, limit=limit, db_path=db_path)
 
-    if not Path(db_path).exists():
-        return {"query": query, "local_results": [], "total": 0, "elapsed_ms": 0, "source": "none"}
-
-    # 获取数据库连接
-    conn = _get_vec_db(db_path)
-    if conn is None:
-        # 无向量表，回退到普通搜索
-        return search_skills(query, limit, online=False, db_path=db_path)
-
+    # 2. 向量召回（可选，模型不可用时跳过）
+    vector_results = []
+    vector_engine = "unavailable"
     try:
-        # 生成查询嵌入
-        model = _get_vec_model()
-        query_emb = model.encode([query])[0]
-
-        # 向量搜索（获取更多候选用于重排序）
-        rows = conn.execute("""
-            SELECT m.id, m.name, m.description, m.source, m.installs,
-                   m.stars, m.topics, m.urls, m.quality_score,
-                   vec_distance_cosine(sv.embedding, ?) AS distance
-            FROM skills_vec sv
-            JOIN skills_merged m ON m.id = sv.rowid
-            WHERE m.verified = 1
-            ORDER BY distance
-            LIMIT ?
-        """, (json.dumps(query_emb.tolist()), limit * 3)).fetchall()
-
-        results = [dict(r) for r in rows]
+        from .vector_search import search_vector
+        vec_resp = search_vector(query, limit=limit, db_path=db_path)
+        vector_results = vec_resp.get("results", [])
+        vector_engine = vec_resp.get("engine", "unavailable")
     except Exception:
-        results = []
-    finally:
-        conn.close()
+        pass
 
-    # Stars 加权重排序（向量距离转为 relevance）
-    for r in results:
-        distance = r.get("distance", 2.0)
-        r["relevance"] = 1.0 - (distance / 2.0)  # 转换为 0-1
+    # 3. 融合去重
+    seen_names = set()
+    merged = []
 
-    results = _rerank_with_stars(results)
+    # 向量结果优先
+    for r in vector_results:
+        norm = r.get("normalized_name", r.get("name", "").lower().strip())
+        if norm not in seen_names:
+            seen_names.add(norm)
+            r["_from_vector"] = True
+            merged.append(r)
+
+    # FTS5 结果补充
+    for r in fts_results:
+        norm = r.get("normalized_name", r.get("name", "").lower().strip())
+        if norm not in seen_names:
+            seen_names.add(norm)
+            r["_from_vector"] = False
+            merged.append(r)
+
+    # 4. 最终重排
+    for r in merged:
+        quality_norm = min(r.get("quality_score", 0) / 100.0, 1.0)
+        relevance = r.get("relevance", 0.0)
+        if r.get("_from_vector"):
+            # 向量结果：relevance 来自余弦相似度（0~1）
+            r["_final_score"] = 0.7 * relevance + 0.3 * quality_norm
+        else:
+            # FTS5 结果：relevance 来自 bm25（已归一化为正值）
+            r["_final_score"] = 0.5 * relevance + 0.5 * quality_norm
+
+    merged.sort(key=lambda x: x.get("_final_score", 0), reverse=True)
+    merged = merged[:limit]
+
+    # 清理临时字段
+    for r in merged:
+        r.pop("_from_vector", None)
+        r.pop("_final_score", None)
 
     elapsed = (time.time() - start) * 1000
 
+    # 确定引擎标签
+    if vector_results and fts_results:
+        engine = vector_engine
+    elif vector_results:
+        engine = vector_engine
+    else:
+        engine = "fts5-only"
+
     return {
-        "query": query,
-        "local_results": results[:limit],
-        "online_results": [],
-        "total": len(results[:limit]),
+        "results": merged,
+        "sources": {
+            "vector": len(vector_results),
+            "fts5+like": len(fts_results),
+        },
         "elapsed_ms": round(elapsed, 1),
-        "source": "vector",
+        "engine": engine,
     }
 
 
