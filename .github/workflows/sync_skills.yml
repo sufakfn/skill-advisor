@@ -1,9 +1,17 @@
 name: Sync Skills Database
 
 on:
+  # 每周一 02:00 UTC 自动运行
   schedule:
-    - cron: "0 2 * * 1"
+    - cron: '0 2 * * 1'
+  # 支持手动触发
   workflow_dispatch:
+    inputs:
+      full_rebuild:
+        description: '强制全量重建（忽略断点续传）'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -11,30 +19,140 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-          cache: "pip"
-      - run: pip install -e ".[dev]"
-      - name: Build database
-        run: python scripts/build_cache.py --source merge --db data/skills.db
-      - name: Check changes
-        id: check
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
         run: |
-          cd data
-          git add skills.db
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Record pre-sync stats
+        id: pre-stats
+        run: |
+          python -c "
+          import sqlite3, json, os
+          db = 'data/skill-advisor.db'
+          if os.path.exists(db):
+              conn = sqlite3.connect(db)
+              total = conn.execute('SELECT COUNT(*) FROM skills_merged').fetchone()[0]
+              with_desc = conn.execute('SELECT COUNT(*) FROM skills_merged WHERE description != \"\"').fetchone()[0]
+              conn.close()
+              print(f'pre_total={total}')
+              print(f'pre_with_desc={with_desc}')
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write(f'pre_total={total}\n')
+                  f.write(f'pre_with_desc={with_desc}\n')
+          else:
+              echo 'pre_total=0'
+              echo 'pre_with_desc=0'
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write('pre_total=0\n')
+                  f.write('pre_with_desc=0\n')
+          "
+
+      - name: Backup existing database
+        run: |
+          if [ -f data/skill-advisor.db ]; then
+            cp data/skill-advisor.db data/skill-advisor.db.bak
+            echo "✅ 已备份现有数据库"
+          else
+            echo "ℹ️ 无现有数据库，将全量构建"
+          fi
+
+      - name: Build / Update skills database
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          if [ "${{ github.event.inputs.full_rebuild }}" == "true" ]; then
+            echo "🔨 强制全量重建模式"
+            python scripts/incremental_update.py --full --github-token "$GITHUB_TOKEN"
+          else
+            echo "🔄 增量更新模式"
+            python scripts/incremental_update.py --github-token "$GITHUB_TOKEN"
+          fi
+          echo ""
+          echo "📊 回补描述..."
+          python scripts/backfill_descriptions.py --workers 16
+          echo ""
+          echo "📊 重建向量索引..."
+          pip install -e ".[vector]" 2>/dev/null || true
+          python scripts/build_vectors.py --incremental 2>/dev/null || python scripts/build_vectors.py --force
+
+      - name: Record post-sync stats
+        id: post-stats
+        run: |
+          python -c "
+          import sqlite3, json, os
+          db = 'data/skill-advisor.db'
+          conn = sqlite3.connect(db)
+          total = conn.execute('SELECT COUNT(*) FROM skills_merged').fetchone()[0]
+          with_desc = conn.execute('SELECT COUNT(*) FROM skills_merged WHERE description != \"\"').fetchone()[0]
+          sources = conn.execute('SELECT source, COUNT(*) FROM skills_merged GROUP BY source ORDER BY COUNT(*) DESC').fetchall()
+          conn.close()
+          print(f'post_total={total}')
+          print(f'post_with_desc={with_desc}')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'post_total={total}\n')
+              f.write(f'post_with_desc={with_desc}\n")
+          print()
+          print('📊 来源分布:')
+          for src, cnt in sources:
+              print(f'   {src}: {cnt}')
+          "
+
+      - name: Generate changelog
+        run: |
+          python scripts/sync_changelog.py \
+            --pre-total "${{ steps.pre-stats.outputs.pre_total }}" \
+            --pre-desc "${{ steps.pre-stats.outputs.pre_with_desc }}" \
+            --post-total "${{ steps.post-stats.outputs.post_total }}" \
+            --post-desc "${{ steps.post-stats.outputs.post_with_desc }}"
+
+      - name: Check for database changes
+        id: git-check
+        run: |
+          git add data/skill-advisor.db CHANGELOG.md 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "changed=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ 数据库无变化，跳过提交"
           else
             echo "changed=true" >> $GITHUB_OUTPUT
+            echo "✅ 检测到数据库变化"
+            git diff --cached --stat
           fi
-      - name: Commit
-        if: steps.check.outputs.changed == "true"
+
+      - name: Commit and push changes
+        if: steps.git-check.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/skills.db
-          git commit -m "chore: sync database"
+          DATE=$(date +%Y-%m-%d)
+          PRE_TOTAL="${{ steps.pre-stats.outputs.pre_total }}"
+          POST_TOTAL="${{ steps.post-stats.outputs.post_total }}"
+          DIFF=$((POST_TOTAL - PRE_TOTAL))
+          if [ $DIFF -ge 0 ]; then
+            SIGN="+"
+          else
+            SIGN=""
+          fi
+          git commit -m "chore: sync skills database (${DATE}) [skip ci]
+
+Skills: ${PRE_TOTAL} → ${POST_TOTAL} (${SIGN}${DIFF})
+"
           git push
+          echo "✅ 已提交并推送更新"
+
+      - name: Cleanup backup
+        if: always()
+        run: |
+          rm -f data/skill-advisor.db.bak

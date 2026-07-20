@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - skill-advisor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; padding: 40px 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { margin-bottom: 20px; }
+        form { margin-bottom: 30px; }
+        input { width: 100%; padding: 14px 20px; font-size: 1em; border: 2px solid #333; border-radius: 8px; background: #1a1a1a; color: #e0e0e0; }
+        .result { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 16px 20px; margin-bottom: 12px; }
+        .result h3 { color: #667eea; margin-bottom: 6px; }
+        .result p { color: #aaa; font-size: 0.9em; }
+        .result .meta { display: flex; gap: 15px; margin-top: 8px; font-size: 0.8em; color: #666; }
+        .back { color: #667eea; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+        .count { color: #888; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back">&larr; Back</a>
+        <h1>Search Results</h1>
+        <form action="/search">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search...">
+        </form>
+        <p class="count">{{ results|length }} results for "{{ query }}"</p>
+        {% for r in results %}
+        <div class="result">
+            <h3>{{ r.name }}</h3>
+            {% if r.description %}<p>{{ r.description[:120] }}</p>{% endif %}
+            <div class="meta">
+                <span>Score: {{ r.quality_score }}</span>
+                {% if r.installs %}<span>Installs: {{ r.installs }}</span>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

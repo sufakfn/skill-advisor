@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profession Packs - skill-advisor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; padding: 40px 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { margin-bottom: 10px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: #888; margin-bottom: 30px; }
+        .pack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+        .pack-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; transition: border-color 0.2s, transform 0.2s; cursor: pointer; text-decoration: none; color: inherit; }
+        .pack-card:hover { border-color: #667eea; transform: translateY(-2px); }
+        .pack-card h3 { color: #fff; margin-bottom: 6px; }
+        .pack-card p { color: #888; font-size: 0.85em; line-height: 1.5; }
+        .pack-card .count { margin-top: 10px; font-size: 0.75em; color: #667eea; }
+        .back { color: #667eea; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back">&larr; Back</a>
+        <h1>Profession Packs</h1>
+        <p class="subtitle">Curated skill bundles for different roles</p>
+        <div class="pack-grid">
+            {% for pack in packs %}
+            <a href="/packs/{{ pack.slug }}" class="pack-card">
+                <h3>{{ pack.name }}</h3>
+                <p>{{ pack.desc }}</p>
+                <div class="count">{{ pack.skills|length }} skills</div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

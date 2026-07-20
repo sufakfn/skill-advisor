@@ -1,0 +1,186 @@
+[
+  {
+    "name": "code-explorer",
+    "plugin": "feature-dev",
+    "description": "A comprehensive, structured workflow for feature development with specialized agents for codebase exploration, architecture design, and quality review.",
+    "source": "anthropic_marketplace",
+    "type": "agent",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev/agents/code-explorer"
+  },
+  {
+    "name": "code-architect",
+    "plugin": "feature-dev",
+    "description": "A comprehensive, structured workflow for feature development with specialized agents for codebase exploration, architecture design, and quality review.",
+    "source": "anthropic_marketplace",
+    "type": "agent",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev/agents/code-architect"
+  },
+  {
+    "name": "code-reviewer",
+    "plugin": "feature-dev",
+    "description": "A comprehensive, structured workflow for feature development with specialized agents for codebase exploration, architecture design, and quality review.",
+    "source": "anthropic_marketplace",
+    "type": "agent",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev/agents/code-reviewer"
+  },
+  {
+    "name": "feature-dev",
+    "plugin": "feature-dev",
+    "description": "A comprehensive, structured workflow for feature development with specialized agents for codebase exploration, architecture design, and quality review.",
+    "source": "anthropic_marketplace",
+    "type": "command",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev/commands/feature-dev"
+  },
+  {
+    "name": "agent-development",
+    "plugin": "plugin-dev",
+    "description": "A comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks, MCP integration, plugin structure, and marketplace publishing.",
+    "source": "anthropic_marketplace",
+    "type": "skill",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev/skills/agent-development"
+  },
+  {
+    "name": "command-development",
+    "plugin": "plugin-dev",
+    "description": "Comprehensive guidance on creating Claude Code slash commands, including file format, frontmatter options, dynamic arguments, and best practices.",
+    "source": "anthropic_marketplace",
+    "type": "skill",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev/skills/command-development"
+  },
+  {
+    "name": "hook-development",
+    "plugin": "plugin-dev",
+    "description": "A comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks, MCP integration, plugin structure, and marketplace publishing.",
+    "source": "anthropic_marketplace",
+    "type": "skill",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev/skills/hook-development"
+  },
+  {
+    "name": "mcp-integration",
+    "plugin": "plugin-dev",
+    "description": "A comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks, MCP integration, plugin structure, and marketplace publishing.",
+    "source": "anthropic_marketplace",
+    "type": "skill",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev/skills/mcp-integration"
+  },
+  {
+    "name": "plugin-settings",
+    "plugin": "plugin-dev",
+    "description": "A comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks, MCP integration, plugin structure, and marketplace publishing.",
+    "source": "anthropic_marketplace",
+    "type": "skill",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev/skills/plugin-settings"
+  },
+  {
+    "name": "plugin-structure",
+    "plugin": "plugin-dev",
+    "description": "Comprehensive guidance on Claude Code plugin architecture, directory layout, and best practices.",
+    "source": "anthropic_marketplace",
+    "type": "skill",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev/skills/plugin-structure"
+  },
+  {
+    "name": "skill-development",
+    "plugin": "plugin-dev",
+    "description": "A comprehensive toolkit for developing Claude Code plugins with expert guidance on hooks, MCP integration, plugin structure, and marketplace publishing.",
+    "source": "anthropic_marketplace",
+    "type": "skill",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/plugin-dev/skills/skill-development"
+  },
+  {
+    "name": "claude-opus-4-5-migration",
+    "plugin": "claude-opus-4-5-migration",
+    "description": "Migrate your code and prompts from Sonnet 4.x and Opus 4.1 to Opus 4.5.",
+    "source": "anthropic_marketplace",
+    "type": "skill",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/claude-opus-4-5-migration/skills/claude-opus-4-5-migration"
+  },
+  {
+    "name": "frontend-design",
+    "plugin": "frontend-design",
+    "description": "Generates distinctive, production-grade frontend interfaces that avoid generic AI aesthetics.",
+    "source": "anthropic_marketplace",
+    "type": "skill",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/frontend-design/skills/frontend-design"
+  },
+  {
+    "name": "writing-rules",
+    "plugin": "hookify",
+    "description": "Easily create custom hooks to prevent unwanted behaviors by analyzing conversation patterns or from explicit instructions.",
+    "source": "anthropic_marketplace",
+    "type": "skill",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/hookify/skills/writing-rules"
+  },
+  {
+    "name": "hookify",
+    "plugin": "hookify",
+    "description": "Easily create custom hooks to prevent unwanted behaviors by analyzing conversation patterns or from explicit instructions.",
+    "source": "anthropic_marketplace",
+    "type": "command",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/hookify/commands/hookify"
+  },
+  {
+    "name": "code-review",
+    "plugin": "code-review",
+    "description": "Automated code review for pull requests using multiple specialized agents with confidence-based scoring to filter false positives.",
+    "source": "anthropic_marketplace",
+    "type": "command",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/code-review/commands/code-review"
+  },
+  {
+    "name": "commit",
+    "plugin": "commit-commands",
+    "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests.",
+    "source": "anthropic_marketplace",
+    "type": "command",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/commit-commands/commands/commit"
+  },
+  {
+    "name": "commit-push-pr",
+    "plugin": "commit-commands",
+    "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests.",
+    "source": "anthropic_marketplace",
+    "type": "command",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/commit-commands/commands/commit-push-pr"
+  },
+  {
+    "name": "clean_gone",
+    "plugin": "commit-commands",
+    "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests.",
+    "source": "anthropic_marketplace",
+    "type": "command",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/commit-commands/commands/clean_gone"
+  },
+  {
+    "name": "new-sdk-app",
+    "plugin": "agent-sdk-dev",
+    "description": "A comprehensive plugin for creating and verifying Claude Agent SDK applications in Python and TypeScript.",
+    "source": "anthropic_marketplace",
+    "type": "command",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/agent-sdk-dev/commands/new-sdk-app"
+  },
+  {
+    "name": "review-pr",
+    "plugin": "pr-review-toolkit",
+    "description": "A comprehensive collection of specialized agents for thorough pull request review, covering code comments, test coverage, error handling, type design, code quality, and code simplification.",
+    "source": "anthropic_marketplace",
+    "type": "command",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/pr-review-toolkit/commands/review-pr"
+  },
+  {
+    "name": "ralph-loop",
+    "plugin": "ralph-wiggum",
+    "description": "Implementation of the Ralph Wiggum technique for iterative, self-referential AI development loops in Claude Code.",
+    "source": "anthropic_marketplace",
+    "type": "command",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum/commands/ralph-loop"
+  },
+  {
+    "name": "cancel-ralph",
+    "plugin": "ralph-wiggum",
+    "description": "Implementation of the Ralph Wiggum technique for iterative, self-referential AI development loops in Claude Code.",
+    "source": "anthropic_marketplace",
+    "type": "command",
+    "url": "https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum/commands/cancel-ralph"
+  }
+]

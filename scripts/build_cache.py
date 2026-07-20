@@ -93,33 +93,11 @@ SKILLS_SH_KEYWORDS = [
 # GitHub Topic 搜索关键词 (借鉴 SkillFinder)
 GITHUB_TOPICS = [
     "claude-skill", "claude-code-skill", "claude-skills", "claude-code-skills",
-    "openclaw-skill", "codex-skill", "codex-skills", "agent-skill",
-    "agent-skills", "ai-agent", "llm-agent", "ai-skill",
-    "ai-skills", "cursor-skills", "kiro-skill", "skill-creator",
-    "skill-marketplace", "skill-registry", "SKILL.md", "agent-skill",
-    "python-skill", "javascript-skill", "typescript-skill", "rust-skill",
-    "go-skill", "java-skill", "react-skill", "vue-skill",
-    "node-skill", "vscode-skill", "jetbrains-skill", "vim-skill",
-    "git-skill", "docker-skill", "kubernetes-skill", "terraform-skill",
-    "ci-cd-skill", "testing-skill", "debug-skill", "refactor-skill",
-    "llm-skill", "gpt-skill", "openai-skill", "anthropic-skill",
-    "rag-skill", "vector-db-skill", "embedding-skill", "fine-tuning-skill",
-    "prompt-engineering", "chatgpt-skill", "gemini-skill", "css-skill",
-    "tailwind-skill", "nextjs-skill", "nuxt-skill", "frontend-skill",
-    "ui-skill", "ux-skill", "design-skill", "accessibility-skill",
-    "animation-skill", "api-skill", "graphql-skill", "rest-skill",
-    "microservice-skill", "database-skill", "postgres-skill", "redis-skill",
-    "mongodb-skill", "serverless-skill", "backend-skill", "aws-skill",
-    "azure-skill", "gcp-skill", "cloud-skill", "monitoring-skill",
-    "logging-skill", "security-skill", "deployment-skill", "automation-skill",
-    "data-skill", "analytics-skill", "visualization-skill", "etl-skill",
-    "pipeline-skill", "sql-skill", "writing-skill", "documentation-skill",
-    "blog-skill", "seo-skill", "content-skill", "translation-skill",
-    "workflow-skill", "productivity-skill", "project-management-skill", "scrum-skill",
-    "agile-skill", "collaboration-skill", "slack-skill", "discord-skill",
-    "notion-skill", "jira-skill", "github-skill", "figma-skill",
-    "stripe-skill", "twilio-skill", "sentry-skill", "vercel-skill",
-    "chinese-skill", "中文技能", "claude-中文",
+    "openclaw-skill", "codex-skill", "codex-skills", "agent-skill", "agent-skills",
+    "cursor-skills", "kiro-skill", "ai-skill", "ai-skills",
+    "claude-agent", "ai-agent", "llm-agent",
+    "skill-creator", "skill-marketplace", "skill-registry",
+    "SKILL.md", "agent-skill",
 ]
 
 
@@ -230,6 +208,16 @@ def init_database(db_path):
             key TEXT PRIMARY KEY,
             value TEXT,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        -- 向量嵌入存储（用于语义搜索）
+        CREATE TABLE IF NOT EXISTS skills_vectors (
+            skill_id INTEGER PRIMARY KEY,
+            embedding BLOB NOT NULL,        -- float32 序列化
+            model TEXT NOT NULL,            -- 模型名，如 'all-MiniLM-L6-v2'
+            dimensions INTEGER NOT NULL,    -- 向量维度，如 384
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (skill_id) REFERENCES skills_merged(id)
         );
     """)
 
@@ -796,131 +784,234 @@ def normalize_name(name):
     return n
 
 
-def merge_all_sources(conn):
-    """Multi-source normalized dedup merge."""
-    print('\n[Merge] Normalized dedup merge...')
-    conn.execute("DELETE FROM skills_merged")
-    conn.execute("DELETE FROM skills_fts")
-    merged = {}
-    url_index = {}
+def merge_all_sources(conn, incremental=False):
+    """5 个数据源 → 去重合并到 skills_merged
 
-    def get_repo_url(url):
-        if "github.com/" in url:
-            parts = url.split("github.com/")[-1].split("/")
-            if len(parts) >= 2:
-                return (parts[0] + "/" + parts[1]).lower()
-        return None
+    incremental=False（默认）: 清空重建（全量模式）
+    incremental=True: 增量模式 — 不删除已有数据，只添加/更新
+    """
+    print(f"\n[合并] 去重合并所有数据源... (模式: {'增量' if incremental else '全量'})")
 
-    def add_skill(name, desc, source, installs=0, stars=0, topics=None, url=""):
+    if not incremental:
+        # 全量模式：清空重建
+        conn.execute("DELETE FROM skills_merged")
+        conn.execute("DELETE FROM skills_fts")
+
+    merged = {}  # normalized_name → skill dict
+
+    # 辅助函数
+    def add_skill(name, desc, source, installs=0, stars=0, topics=None, url="", cn_aliases=None):
         norm = normalize_name(name)
-        if not norm or len(norm) < 2: return
-        repo_key = get_repo_url(url) if url else None
-        if repo_key and repo_key in url_index:
-            norm = url_index[repo_key]
+        if not norm or len(norm) < 2:
+            return
         if norm in merged:
+            # 已存在 → 保留描述更长的 + 记录多来源
             existing = merged[norm]
             if len(desc) > len(existing.get("description", "")):
                 existing["description"] = desc
+            # 用 set 追踪来源，避免重复
             existing.setdefault("sources_set", set()).add(source)
             existing["installs"] = max(existing["installs"], installs)
             existing["stars"] = max(existing["stars"], stars)
             if url:
-                existing.setdefault("urls", [])
-                if url not in existing["urls"]:
-                    existing["urls"].append(url)
+                existing.setdefault("urls", []).append(url)
+            # 合并 topics
             if topics:
                 existing_topics = set(existing.get("topics", []))
                 existing_topics.update(topics)
                 existing["topics"] = list(existing_topics)
         else:
             merged[norm] = {
-                "name": name, "normalized_name": norm,
-                "description": desc, "sources_set": {source},
-                "installs": installs, "stars": stars,
+                "name": name,
+                "normalized_name": norm,
+                "description": desc,
+                "sources_set": {source},  # 用 set 去重
+                "installs": installs,
+                "stars": stars,
                 "topics": topics or [],
                 "urls": [url] if url else [],
             }
-            if repo_key: url_index[repo_key] = norm
 
-    # 1. Anthropic
-    try:
-        rows = conn.execute("SELECT name, plugin, description, type, url FROM anthropic_skills").fetchall()
-        for row in rows:
-            name, plugin, desc, stype, url = row
-            add_skill(plugin + "-" + name, desc, "anthropic_marketplace", url=url)
-        print(f"  Anthropic: {len(rows)}")
-    except Exception as e:
-        print(f"  Anthropic: skip ({e})")
-
-    # 2. ClawHub
-    rows = conn.execute("SELECT slug, display_name, summary, description, topics, tags, downloads, installs, stars FROM clawhub_skills").fetchall()
+    # 1. ClawHub (最高质量)
+    rows = conn.execute(
+        "SELECT slug, display_name, summary, description, topics, tags, downloads, installs, stars FROM clawhub_skills"
+    ).fetchall()
     for row in rows:
         slug, dn, summary, desc, topics_json, tags_json, dl, ins, st = row
         topics = []
         try:
             topics = json.loads(topics_json or "[]")
+        except:
+            pass
+        try:
             tags = json.loads(tags_json or "[]")
             topics.extend(tags)
-        except: pass
-        add_skill(dn or slug, (desc or summary or ""), "clawhub", installs=ins or dl, stars=st, topics=list(set(topics)), url="https://clawhub.ai/skills/" + slug)
-    print(f"  ClawHub: {len(rows)}")
+        except:
+            pass
+        final_desc = desc or summary or ""
+        url = f"https://clawhub.ai/skills/{slug}"
+        # ClawHub 的 tags 也作为中文别名
+        cn_aliases = [t for t in tags if any('一' <= c <= '鿿' for c in t)]
+        add_skill(dn or slug, final_desc, "clawhub", installs=ins or dl, stars=st,
+                  topics=list(set(topics)), url=url, cn_aliases=cn_aliases)
+    print(f"  ClawHub: {len(rows)} 条")
+
+    # 2. skills.sh (量最大)
+    rows = conn.execute(
+        "SELECT skill_id, name, installs FROM skills_sh_skills"
+    ).fetchall()
+    for row in rows:
+        sid, name, installs = row
+        if not name:
+            name = sid.split("/")[-1] if "/" in sid else sid
+        url = f"https://skills.sh/skill/{sid}"
+        add_skill(name, "", "skills_sh", installs=installs or 0, url=url)
+    print(f"  skills.sh: {len(rows)} 条")
 
     # 3. GitHub Topic
-    rows = conn.execute("SELECT repo_fullname, name, description, stars, topics FROM github_topic_skills").fetchall()
+    rows = conn.execute(
+        "SELECT repo_fullname, name, description, stars, topics FROM github_topic_skills"
+    ).fetchall()
     for row in rows:
         rfn, name, desc, st, topics_json = row
         topics = []
-        try: topics = json.loads(topics_json or "[]")
-        except: pass
-        add_skill(name, desc or "", "github_topic", stars=st or 0, topics=topics, url="https://github.com/" + rfn)
-    print(f"  GitHub Topic: {len(rows)}")
+        try:
+            topics = json.loads(topics_json or "[]")
+        except:
+            pass
+        url = f"https://github.com/{rfn}"
+        add_skill(name, desc or "", "github_topic", stars=st or 0,
+                  topics=topics, url=url)
+    print(f"  GitHub Topic: {len(rows)} 条")
 
     # 4. GitHub Code
-    rows = conn.execute("SELECT repo_path, name, stars FROM github_code_skills").fetchall()
+    rows = conn.execute(
+        "SELECT repo_path, name, stars FROM github_code_skills"
+    ).fetchall()
     for row in rows:
         rp, name, st = row
-        add_skill(name, "", "github_code", stars=st or 0, url="https://github.com/" + rp)
-    print(f"  GitHub Code: {len(rows)}")
+        url = f"https://github.com/{rp}"
+        add_skill(name, "", "github_code", stars=st or 0, url=url)
+    print(f"  GitHub Code: {len(rows)} 条")
 
-    # 5. skills.sh
-    rows = conn.execute("SELECT skill_id, name, installs FROM skills_sh_skills").fetchall()
-    for row in rows:
-        sid, name, installs = row
-        if not name: name = sid.split("/")[-1] if "/" in sid else sid
-        add_skill(name, "", "skills_sh", installs=installs or 0, url="https://skills.sh/skill/" + sid)
-    print(f"  skills.sh: {len(rows)}")
-
-    # 6. Local
-    rows = conn.execute("SELECT name, description FROM local_skills").fetchall()
+    # 5. 本地
+    rows = conn.execute(
+        "SELECT name, description FROM local_skills"
+    ).fetchall()
     for row in rows:
         name, desc = row
         add_skill(name, desc or "", "local")
-    print(f"  Local: {len(rows)}")
+    print(f"  本地: {len(rows)} 条")
 
-    # Write to DB
-    print(f"  Deduped: {len(merged)} unique skills")
+    # 补充 name_aliases: 从 FALLBACK_SKILLS intent 标签获取中文别名
+    try:
+        advisor_path = SCRIPT_DIR / "skill_advisor.py"
+        if advisor_path.exists():
+            content = advisor_path.read_text(encoding="utf-8")
+            start = content.find("FALLBACK_SKILLS = [")
+            if start > 0:
+                end = content.find("]\n\n", start)
+                if end > 0:
+                    exec_globals = {}
+                    exec(content[start:end + 1], exec_globals)
+                    for s in exec_globals.get("FALLBACK_SKILLS", []):
+                        name = s.get("name", "")
+                        intents = s.get("intent", [])
+                        cn = [t for t in intents if any('一' <= c <= '鿿' for c in t)]
+                        if cn:
+                            norm = normalize_name(name)
+                            if norm in merged:
+                                merged[norm].setdefault("cn_aliases", set()).update(cn)
+    except Exception:
+        pass
+
+    # 写入合并表 + 计算质量分
+    print(f"  去重后: {len(merged)} 个唯一技能")
+
+    # 增量模式：先加载已有数据用于合并
+    existing = {}
+    if incremental:
+        for row in conn.execute("SELECT id, name, normalized_name, description, source, installs, stars, topics, urls, quality_score, name_aliases FROM skills_merged"):
+            existing[row[2]] = {
+                "id": row[0], "name": row[1], "normalized_name": row[2],
+                "description": row[3] or "", "source": row[4] or "",
+                "installs": row[5] or 0, "stars": row[6] or 0,
+                "online": True  # 标记为已有
+            }
+
     for norm, skill in merged.items():
+        # 质量分: 有描述 +30, 有安装量 +0~30, 有stars +0~20, 有topics +0~20
         quality = 0
-        if skill["description"]: quality += min(30, len(skill["description"]) // 10)
-        if skill["installs"] > 0: quality += min(25, int(skill["installs"] ** 0.5))
-        if skill["stars"] > 0: quality += min(15, int(skill["stars"] ** 0.3))
-        if skill["topics"]: quality += min(15, len(skill["topics"]) * 3)
-        sources = skill.get("sources_set", set())
-        if "anthropic_marketplace" in sources: quality += 15
-        elif "clawhub" in sources: quality += 10
-        elif "github_topic" in sources: quality += 5
+        if skill["description"]:
+            quality += min(30, len(skill["description"]) // 10)
+        if skill["installs"] > 0:
+            quality += min(30, int(skill["installs"] ** 0.5))
+        if skill["stars"] > 0:
+            quality += min(20, int(skill["stars"] ** 0.3))
+        if skill["topics"]:
+            quality += min(20, len(skill["topics"]) * 4)
         quality = min(100, quality)
-        urls = list(skill.get("urls", []))[:5]
-        sources_str = ",".join(sorted(skill.get("sources_set", set())))
-        conn.execute(
-            "INSERT INTO skills_merged (name, normalized_name, description, source, installs, stars, topics, urls, quality_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (skill["name"], norm, skill["description"][:1000], sources_str, skill["installs"], skill["stars"], json.dumps(skill["topics"][:20], ensure_ascii=False), json.dumps(urls, ensure_ascii=False), quality)
+
+        urls = list(set(skill.get("urls", [])))[:5]  # 最多5个URL
+        sources_str = ",".join(sorted(skill.get("sources_set", {skill.get("source", "")})))
+        cn_aliases_json = json.dumps(
+            sorted(skill.get("cn_aliases", set())), ensure_ascii=False
         )
+
+        if incremental and norm in existing:
+            # 增量模式：已有记录 → 更新（保留更好的描述、更高的安装量）
+            ex = existing[norm]
+            # 保留更长的描述
+            desc = skill["description"][:1000]
+            if len(ex.get("description", "")) > len(desc):
+                desc = ex["description"]
+            # 合并来源
+            old_sources = set(ex.get("source", "").split(",")) if ex.get("source") else set()
+            new_sources = set(sources_str.split(","))
+            merged_sources = ",".join(sorted(old_sources | new_sources))
+            # 取更高的 installs/stars
+            installs = max(ex.get("installs", 0), skill["installs"])
+            stars = max(ex.get("stars", 0), skill["stars"])
+            conn.execute("""
+                UPDATE skills_merged
+                SET name=?, description=?, source=?, installs=?, stars=?,
+                    topics=?, urls=?, quality_score=?, name_aliases=?,
+                    fetched_at=CURRENT_TIMESTAMP
+                WHERE id=?
+            """, (
+                skill["name"], desc, merged_sources, installs, stars,
+                json.dumps(skill["topics"][:20], ensure_ascii=False),
+                json.dumps(urls, ensure_ascii=False), quality,
+                cn_aliases_json, ex["id"]
+            ))
+        else:
+            # 新记录 → 插入
+            conn.execute("""
+                INSERT INTO skills_merged
+                (name, normalized_name, description, source, installs, stars,
+                 topics, urls, quality_score, name_aliases)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                skill["name"], norm, skill["description"][:1000],
+                sources_str, skill["installs"], skill["stars"],
+                json.dumps(skill["topics"][:20], ensure_ascii=False),
+                json.dumps(urls, ensure_ascii=False), quality,
+                cn_aliases_json,
+            ))
+
     conn.commit()
-    conn.execute("INSERT INTO skills_fts(skills_fts) VALUES('optimize')")
+
+    # 优化 FTS（仅全量模式需要重建，增量模式触发器自动维护）
+    if not incremental:
+        conn.execute("INSERT INTO skills_fts(skills_fts) VALUES('optimize')")
     conn.commit()
+
     return len(merged)
 
+
+# ============================================================
+# 统计
+# ============================================================
 
 def show_stats(conn):
     """显示缓存统计"""
@@ -990,6 +1081,10 @@ def main():
     parser.add_argument("--limit", type=int, default=100, help="ClawHub每页条数")
     parser.add_argument("--max-repos", type=int, default=500, help="每个GitHub Topic最多处理repo数")
     parser.add_argument("--resume", action="store_true", help="断点续传 (跳过多余已采集数据)")
+    parser.add_argument("--vectors", action="store_true", help="合并后构建向量嵌入索引（需 sentence-transformers）")
+    parser.add_argument("--model", default="all-MiniLM-L6-v2", help="嵌入模型名 (默认: all-MiniLM-L6-v2)")
+    parser.add_argument("--force", action="store_true", help="强制重建所有嵌入")
+    parser.add_argument("--incremental", action="store_true", help="增量模式：不清空已有数据，只添加/更新")
     args = parser.parse_args()
 
     if args.stats:
@@ -1029,7 +1124,18 @@ def main():
 
         # 合并
         if args.source in ("merge", "all"):
-            merge_all_sources(conn)
+            merge_all_sources(conn, incremental=args.incremental)
+
+            # 可选：构建向量嵌入索引
+            if args.vectors:
+                print("\n[向量] 构建嵌入索引...")
+                try:
+                    sys.path.insert(0, str(SCRIPT_DIR))
+                    from build_vectors import build_all
+                    build_all(conn, model_name=args.model, force=args.force)
+                except ImportError as e:
+                    print(f"  ⚠️ 向量依赖未安装: {e}")
+                    print("  提示: pip install -e '.[vector]'")
 
     except KeyboardInterrupt:
         print("\n\n⏸️ 用户中断, 数据已保存, 下次运行 --resume 继续")

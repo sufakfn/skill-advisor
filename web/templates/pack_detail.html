@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack Detail - skill-advisor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; padding: 40px 20px; }
+        .container { max-width: 700px; margin: 0 auto; }
+        h1 { margin-bottom: 10px; }
+        .subtitle { color: #888; margin-bottom: 30px; }
+        .skill { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 14px 18px; margin-bottom: 10px; }
+        .skill h3 { color: #667eea; margin-bottom: 4px; }
+        .skill p { color: #aaa; font-size: 0.85em; }
+        .skill .required { color: #f59e0b; font-size: 0.75em; margin-top: 4px; }
+        .combo { background: #1a1a1a; border-left: 3px solid #667eea; padding: 16px 20px; margin-top: 30px; border-radius: 0 8px 8px 0; }
+        .combo h3 { color: #667eea; margin-bottom: 8px; }
+        .combo p { color: #aaa; font-size: 0.9em; line-height: 1.6; }
+        .back { color: #667eea; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/packs" class="back">&larr; All Packs</a>
+        <h1>{{ pack.name }}</h1>
+        <p class="subtitle">{{ pack.desc }}</p>
+        {% for skill in pack.skills %}
+        <div class="skill">
+            <h3>{{ skill.name }}</h3>
+            <p>{{ skill.reason }}</p>
+            {% if skill.required %}<div class="required">Required</div>{% endif %}
+        </div>
+        {% endfor %}
+        {% if pack.combo_guide %}
+        <div class="combo">
+            <h3>Combo Guide</h3>
+            <p>{{ pack.combo_guide }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
