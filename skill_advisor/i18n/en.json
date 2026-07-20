@@ -1,0 +1,20 @@
+{
+  "app_name": "skill-advisor",
+  "search_placeholder": "Search skills... (e.g. react, testing)",
+  "search_button": "Search",
+  "results_count": "{count} results",
+  "no_results": "No skills found",
+  "safety_safe": "✅ Verified",
+  "safety_unverified": "⚠️ Unverified",
+  "install_confirm": "Install unverified skill?",
+  "install": "Install",
+  "cancel": "Cancel",
+  "dismiss": "Dismiss",
+  "installed": "Installed",
+  "not_needed": "Not needed",
+  "professor_pack": "Profession Packs",
+  "combo_guide": "Combo Guide",
+  "required": "Required",
+  "suggested": "Suggested",
+  "later": "Later"
+}

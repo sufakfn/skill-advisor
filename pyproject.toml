@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "skill-advisor"
+version = "6.1.0"
+description = "智能技能推荐引擎 — 根据身份/需求推荐 AI 智能体技能"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "skill-advisor contributors", email = "skill-advisor@example.com"},
+]
+maintainers = [
+    {name = "skill-advisor contributors"},
+]
+keywords = ["ai", "agent", "skills", "claude", "cursor", "codex", "recommendation", "skill-advisor", "claude-code"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dynamic = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "flake8", "build", "twine"]
+web = ["fastapi>=0.100", "uvicorn[standard]", "jinja2"]
+
+[project.scripts]
+skill-advisor = "skill_advisor.recommender:main"
+
+[project.urls]
+Homepage = "https://github.com/skill-advisor/skill-advisor"
+Repository = "https://github.com/skill-advisor/skill-advisor"
+Issues = "https://github.com/skill-advisor/skill-advisor/issues"
+Documentation = "https://github.com/skill-advisor/skill-advisor#readme"
+Changelog = "https://github.com/skill-advisor/skill-advisor/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+include = ["skill_advisor*"]
+exclude = ["tests*", "scripts*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.db", "*.md", "*.toml"]
+skill_advisor = ["data/*.db"]

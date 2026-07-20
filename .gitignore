@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+data/*.db-journal
+data/*.db-shm
+data/*.db-wal
+data/build_log.txt
+data/topic*_log.txt
+data/test*.db
+data/github_topic*.db
+
+# Keep the main database
+!data/skill-advisor.db

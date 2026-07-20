@@ -1,0 +1,20 @@
+{
+  "app_name": "スキルアドバイザー",
+  "search_placeholder": "スキルを検索... (例: react, testing)",
+  "search_button": "検索",
+  "results_count": "{count} 件",
+  "no_results": "スキルが見つかりません",
+  "safety_safe": "✅ 検証済み",
+  "safety_unverified": "⚠️ 未検証",
+  "install_confirm": "未検証スキルをインストールしますか？",
+  "install": "インストール",
+  "cancel": "キャンセル",
+  "dismiss": "無視",
+  "installed": "インストール済み",
+  "not_needed": "不要",
+  "professor_pack": "職業パック",
+  "combo_guide": "コンボガイド",
+  "required": "必須",
+  "suggested": "推奨",
+  "later": "後で"
+}

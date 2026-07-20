@@ -1,0 +1,360 @@
+{
+  "aggregate": {
+    "p5": 0.204,
+    "r10": 0.33,
+    "mrr": 0.32166666666666666,
+    "avg_ms": 11.165999999999999
+  },
+  "details": [
+    {
+      "query": "react",
+      "p5": 1.0,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 18.3
+    },
+    {
+      "query": "python",
+      "p5": 1.0,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 8.8
+    },
+    {
+      "query": "testing",
+      "p5": 0.4,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 10.2
+    },
+    {
+      "query": "deployment",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 11.3
+    },
+    {
+      "query": "database",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 9.7
+    },
+    {
+      "query": "authentication",
+      "p5": 1.0,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 8.8
+    },
+    {
+      "query": "git",
+      "p5": 0.2,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 5.8
+    },
+    {
+      "query": "docker",
+      "p5": 1.0,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 5.9
+    },
+    {
+      "query": "typescript",
+      "p5": 0.2,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 8.2
+    },
+    {
+      "query": "api",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 7.6
+    },
+    {
+      "query": "refactoring",
+      "p5": 1.0,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 8.0
+    },
+    {
+      "query": "security",
+      "p5": 0.2,
+      "r10": 1.0,
+      "mrr": 0.5,
+      "elapsed_ms": 10.0
+    },
+    {
+      "query": "documentation",
+      "p5": 0.2,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 8.7
+    },
+    {
+      "query": "frontend",
+      "p5": 0.2,
+      "r10": 0.5,
+      "mrr": 1.0,
+      "elapsed_ms": 8.1
+    },
+    {
+      "query": "backend",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 3.9
+    },
+    {
+      "query": "machine learning",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 8.9
+    },
+    {
+      "query": "code review",
+      "p5": 1.0,
+      "r10": 0.5,
+      "mrr": 1.0,
+      "elapsed_ms": 7.3
+    },
+    {
+      "query": "performance",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 8.6
+    },
+    {
+      "query": "accessibility",
+      "p5": 1.0,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 6.8
+    },
+    {
+      "query": "monitoring",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 5.8
+    },
+    {
+      "query": "payment",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 4.0
+    },
+    {
+      "query": "email",
+      "p5": 0.2,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 8.1
+    },
+    {
+      "query": "animation",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 4.6
+    },
+    {
+      "query": "markdown",
+      "p5": 1.0,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 4.5
+    },
+    {
+      "query": "sql",
+      "p5": 0.2,
+      "r10": 1.0,
+      "mrr": 0.25,
+      "elapsed_ms": 3.8
+    },
+    {
+      "query": "前端",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 13.3
+    },
+    {
+      "query": "后端",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 14.4
+    },
+    {
+      "query": "测试",
+      "p5": 0.2,
+      "r10": 0.5,
+      "mrr": 0.3333333333333333,
+      "elapsed_ms": 13.7
+    },
+    {
+      "query": "部署",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 14.4
+    },
+    {
+      "query": "数据库",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 15.3
+    },
+    {
+      "query": "安全",
+      "p5": 0.2,
+      "r10": 1.0,
+      "mrr": 1.0,
+      "elapsed_ms": 14.3
+    },
+    {
+      "query": "文档",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 13.9
+    },
+    {
+      "query": "性能",
+      "p5": 0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 15.0
+    },
+    {
+      "query": "代码审查",
+      "p5": 0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 14.4
+    },
+    {
+      "query": "重构",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 15.8
+    },
+    {
+      "query": "支付",
+      "p5": 0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 13.9
+    },
+    {
+      "query": "邮件",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 15.3
+    },
+    {
+      "query": "动画",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 14.2
+    },
+    {
+      "query": "监控",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 15.2
+    },
+    {
+      "query": "认证",
+      "p5": 0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 14.4
+    },
+    {
+      "query": "登录",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 15.0
+    },
+    {
+      "query": "注册",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 13.7
+    },
+    {
+      "query": "搜索",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 15.0
+    },
+    {
+      "query": "图片",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 15.8
+    },
+    {
+      "query": "视频",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 14.5
+    },
+    {
+      "query": "音频",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 14.3
+    },
+    {
+      "query": "图表",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 14.4
+    },
+    {
+      "query": "可视化",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 13.8
+    },
+    {
+      "query": "分析",
+      "p5": 0.0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 13.9
+    },
+    {
+      "query": "爬虫",
+      "p5": 0,
+      "r10": 0.0,
+      "mrr": 0,
+      "elapsed_ms": 14.7
+    }
+  ]
+}

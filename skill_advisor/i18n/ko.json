@@ -1,0 +1,20 @@
+{
+  "app_name": "스킬 어드바이저",
+  "search_placeholder": "스킬 검색... (예: react, testing)",
+  "search_button": "검색",
+  "results_count": "{count} 개",
+  "no_results": "스킬을 찾을 수 없습니다",
+  "safety_safe": "✅ 검증됨",
+  "safety_unverified": "⚠️ 미검증",
+  "install_confirm": "미검증 스킬을 설치하시겠습니까?",
+  "install": "설치",
+  "cancel": "취소",
+  "dismiss": "무시",
+  "installed": "설치됨",
+  "not_needed": "불필요",
+  "professor_pack": "직업 팩",
+  "combo_guide": "콤보 가이드",
+  "required": "필수",
+  "suggested": "권장",
+  "later": "나중에"
+}

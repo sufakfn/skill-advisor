@@ -1,0 +1,360 @@
+[
+  {
+    "query": "react",
+    "expected": [
+      "react",
+      "react-best-practices"
+    ],
+    "category": "frontend"
+  },
+  {
+    "query": "python",
+    "expected": [
+      "python"
+    ],
+    "category": "language"
+  },
+  {
+    "query": "testing",
+    "expected": [
+      "unit-test",
+      "webapp-testing"
+    ],
+    "category": "testing"
+  },
+  {
+    "query": "deployment",
+    "expected": [
+      "vercel-deploy"
+    ],
+    "category": "devops"
+  },
+  {
+    "query": "database",
+    "expected": [
+      "postgres-best-practices"
+    ],
+    "category": "backend"
+  },
+  {
+    "query": "authentication",
+    "expected": [
+      "auth"
+    ],
+    "category": "security"
+  },
+  {
+    "query": "git",
+    "expected": [
+      "using-git-worktrees"
+    ],
+    "category": "vcs"
+  },
+  {
+    "query": "docker",
+    "expected": [
+      "docker"
+    ],
+    "category": "devops"
+  },
+  {
+    "query": "typescript",
+    "expected": [
+      "typescript-best-practices"
+    ],
+    "category": "language"
+  },
+  {
+    "query": "api",
+    "expected": [
+      "rest-best-practices",
+      "graphql-best-practices"
+    ],
+    "category": "backend"
+  },
+  {
+    "query": "refactoring",
+    "expected": [
+      "refactoring"
+    ],
+    "category": "code-quality"
+  },
+  {
+    "query": "security",
+    "expected": [
+      "security-audit",
+      "security-best-practices"
+    ],
+    "category": "security"
+  },
+  {
+    "query": "documentation",
+    "expected": [
+      "documentation-skill"
+    ],
+    "category": "writing"
+  },
+  {
+    "query": "frontend",
+    "expected": [
+      "frontend-design",
+      "react-best-practices"
+    ],
+    "category": "frontend"
+  },
+  {
+    "query": "backend",
+    "expected": [
+      "postgres-best-practices"
+    ],
+    "category": "backend"
+  },
+  {
+    "query": "machine learning",
+    "expected": [
+      "ml-model-training"
+    ],
+    "category": "ml"
+  },
+  {
+    "query": "code review",
+    "expected": [
+      "code-review",
+      "pr-review"
+    ],
+    "category": "code-quality"
+  },
+  {
+    "query": "performance",
+    "expected": [
+      "web-perf"
+    ],
+    "category": "performance"
+  },
+  {
+    "query": "accessibility",
+    "expected": [
+      "accessibility"
+    ],
+    "category": "frontend"
+  },
+  {
+    "query": "monitoring",
+    "expected": [
+      "sentry-sdk-setup"
+    ],
+    "category": "devops"
+  },
+  {
+    "query": "payment",
+    "expected": [
+      "stripe-best-practices"
+    ],
+    "category": "backend"
+  },
+  {
+    "query": "email",
+    "expected": [
+      "react-email"
+    ],
+    "category": "frontend"
+  },
+  {
+    "query": "animation",
+    "expected": [
+      "animation-skill"
+    ],
+    "category": "frontend"
+  },
+  {
+    "query": "markdown",
+    "expected": [
+      "markdown"
+    ],
+    "category": "writing"
+  },
+  {
+    "query": "sql",
+    "expected": [
+      "sql-best-practices"
+    ],
+    "category": "backend"
+  },
+  {
+    "query": "前端",
+    "expected": [
+      "react-best-practices",
+      "frontend-design"
+    ],
+    "category": "frontend"
+  },
+  {
+    "query": "后端",
+    "expected": [
+      "postgres-best-practices"
+    ],
+    "category": "backend"
+  },
+  {
+    "query": "测试",
+    "expected": [
+      "unit-test",
+      "webapp-testing"
+    ],
+    "category": "testing"
+  },
+  {
+    "query": "部署",
+    "expected": [
+      "vercel-deploy"
+    ],
+    "category": "devops"
+  },
+  {
+    "query": "数据库",
+    "expected": [
+      "postgres-best-practices"
+    ],
+    "category": "backend"
+  },
+  {
+    "query": "安全",
+    "expected": [
+      "security-audit"
+    ],
+    "category": "security"
+  },
+  {
+    "query": "文档",
+    "expected": [
+      "documentation-skill"
+    ],
+    "category": "writing"
+  },
+  {
+    "query": "性能",
+    "expected": [
+      "web-perf"
+    ],
+    "category": "performance"
+  },
+  {
+    "query": "代码审查",
+    "expected": [
+      "code-review"
+    ],
+    "category": "code-quality"
+  },
+  {
+    "query": "重构",
+    "expected": [
+      "refactoring"
+    ],
+    "category": "code-quality"
+  },
+  {
+    "query": "支付",
+    "expected": [
+      "stripe-best-practices"
+    ],
+    "category": "backend"
+  },
+  {
+    "query": "邮件",
+    "expected": [
+      "react-email"
+    ],
+    "category": "frontend"
+  },
+  {
+    "query": "动画",
+    "expected": [
+      "animation-skill"
+    ],
+    "category": "frontend"
+  },
+  {
+    "query": "监控",
+    "expected": [
+      "sentry-sdk-setup"
+    ],
+    "category": "devops"
+  },
+  {
+    "query": "认证",
+    "expected": [
+      "auth"
+    ],
+    "category": "security"
+  },
+  {
+    "query": "登录",
+    "expected": [
+      "auth"
+    ],
+    "category": "security"
+  },
+  {
+    "query": "注册",
+    "expected": [
+      "auth"
+    ],
+    "category": "security"
+  },
+  {
+    "query": "搜索",
+    "expected": [
+      "algolia"
+    ],
+    "category": "backend"
+  },
+  {
+    "query": "图片",
+    "expected": [
+      "image-optimization"
+    ],
+    "category": "frontend"
+  },
+  {
+    "query": "视频",
+    "expected": [
+      "video-creation"
+    ],
+    "category": "media"
+  },
+  {
+    "query": "音频",
+    "expected": [
+      "tts-voice-synthesis"
+    ],
+    "category": "media"
+  },
+  {
+    "query": "图表",
+    "expected": [
+      "dataviz"
+    ],
+    "category": "data"
+  },
+  {
+    "query": "可视化",
+    "expected": [
+      "dataviz"
+    ],
+    "category": "data"
+  },
+  {
+    "query": "分析",
+    "expected": [
+      "analytics-skill"
+    ],
+    "category": "data"
+  },
+  {
+    "query": "爬虫",
+    "expected": [
+      "web-scraping"
+    ],
+    "category": "backend"
+  }
+]
