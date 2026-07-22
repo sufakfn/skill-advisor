@@ -154,10 +154,8 @@ jobs:
           else
             SIGN=""
           fi
-          git commit -m "chore: sync skills database (${DATE}) [skip ci]
-
-Skills: ${PRE_TOTAL} → ${POST_TOTAL} (${SIGN}${DIFF})
-"
+          COMMIT_MSG="chore: sync skills database (${DATE}) [skip ci] | Skills: ${PRE_TOTAL} → ${POST_TOTAL} (${SIGN}${DIFF})"
+          git commit -m "$COMMIT_MSG"
           git push
           echo "✅ 已提交并推送更新"
 
