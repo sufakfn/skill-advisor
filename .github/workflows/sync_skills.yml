@@ -69,18 +69,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           echo "🔄 增量更新数据源..."
-          python scripts/incremental_update.py --github-token "$GITHUB_TOKEN"
+          timeout 120 python scripts/incremental_update.py --github-token "$GITHUB_TOKEN" || echo "更新超时，跳过"
 
       - name: Backfill descriptions
         run: |
           echo "📊 回补技能描述..."
-          python scripts/backfill_descriptions.py --workers 16
+          timeout 120 python scripts/backfill_descriptions.py --workers 8 || echo "回补超时，跳过"
 
       - name: Rebuild vectors
         run: |
           echo "🔧 重建向量索引..."
           pip install -e ".[vector]" 2>/dev/null || true
-          python scripts/build_vectors.py --incremental 2>/dev/null || python scripts/build_vectors.py --force
+          timeout 180 python scripts/build_vectors.py --incremental 2>/dev/null || python scripts/build_vectors.py --force || echo "向量重建超时，跳过"
 
       - name: Record post-sync stats
         id: post-stats
