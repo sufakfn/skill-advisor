@@ -1,4 +1,4 @@
-name: data_sync
+name: Sync Skills Database
 
 on:
   push:
