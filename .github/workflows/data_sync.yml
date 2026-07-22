@@ -1,6 +1,7 @@
 name: data_sync
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:
