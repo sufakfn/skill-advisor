@@ -31,28 +31,36 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
+      - name: Check database
+        run: |
+          ls -la data/ 2>/dev/null || echo "no data dir"
+          file data/skill-advisor.db 2>/dev/null || echo "no db file"
+
       - name: Record pre-sync stats
         id: pre-stats
         run: |
           python -c "
           import sqlite3, os
           db = 'data/skill-advisor.db'
-          if os.path.exists(db):
-              conn = sqlite3.connect(db)
-              total = conn.execute('SELECT COUNT(*) FROM skills_merged').fetchone()[0]
-              with_desc = conn.execute('SELECT COUNT(*) FROM skills_merged WHERE description != \"\"').fetchone()[0]
-              conn.close()
-              print(f'pre_total={total}')
-              print(f'pre_with_desc={with_desc}')
-              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-                  f.write(f'pre_total={total}\n')
-                  f.write(f'pre_with_desc={with_desc}\n')
+          if os.path.exists(db) and os.path.getsize(db) > 1000:
+              try:
+                  conn = sqlite3.connect(db)
+                  total = conn.execute('SELECT COUNT(*) FROM skills_merged').fetchone()[0]
+                  with_desc = conn.execute('SELECT COUNT(*) FROM skills_merged WHERE description != \"\"').fetchone()[0]
+                  conn.close()
+                  print(f'pre_total={total}')
+                  print(f'pre_with_desc={with_desc}')
+              except Exception as e:
+                  print(f'DB error: {e}')
+                  print('pre_total=0')
+                  print('pre_with_desc=0')
           else:
-              echo 'pre_total=0'
-              echo 'pre_with_desc=0'
-              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-                  f.write('pre_total=0\n')
-                  f.write('pre_with_desc=0\n')
+              print('DB not found or too small')
+              print('pre_total=0')
+              print('pre_with_desc=0')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'pre_total={total if \"total\" in dir() else 0}\n')
+              f.write(f'pre_with_desc={with_desc if \"with_desc\" in dir() else 0}\n')
           "
 
       - name: Incremental update
