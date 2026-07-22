@@ -6,6 +6,13 @@ on:
     - cron: '0 2 * * 1'
   # 支持手动触发
   workflow_dispatch:
+  # push 时触发（仅当数据库相关文件变化时）
+  push:
+    paths:
+      - 'scripts/incremental_update.py'
+      - 'scripts/backfill_descriptions.py'
+      - 'scripts/build_vectors.py'
+      - 'data/**'
     inputs:
       full_rebuild:
         description: '强制全量重建（忽略断点续传）'
