@@ -32,6 +32,9 @@ SCRIPT_DIR = Path(__file__).parent
 ROOT_DIR = SCRIPT_DIR.parent
 DB_PATH = ROOT_DIR / "data" / "skill-advisor.db"
 
+# 确保 scripts 目录在 Python path 中（用于导入 build_cache 等模块）
+sys.path.insert(0, str(SCRIPT_DIR))
+
 
 def get_stats(db_path=None):
     """获取数据库统计"""

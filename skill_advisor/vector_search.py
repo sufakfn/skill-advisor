@@ -20,12 +20,12 @@
   #   "results": [...],
   #   "engine": "vss" | "cosine" | "unavailable",
   #   "elapsed_ms": float,
-  #   "model": "all-MiniLM-L6-v2"
+  #   "model": "BAAI/bge-small-zh-v1.5"
   # }
 
   # 检查引擎状态
   status = get_engine_status()
-  # status = {"engine": "vss", "model": "all-MiniLM-L6-v2", "dimensions": 384, "count": 5000}
+  # status = {"engine": "vss", "model": "BAAI/bge-small-zh-v1.5", "dimensions": 384, "count": 5000}
 """
 
 import json
@@ -43,7 +43,7 @@ _model_name = None
 _dimensions = None
 
 
-def _load_model(model_name="all-MiniLM-L6-v2"):
+def _load_model(model_name="BAAI/bge-small-zh-v1.5"):
     """懒加载 sentence-transformers 模型（全局单例）"""
     global _model, _model_name, _dimensions
     if _model is not None and _model_name == model_name:
@@ -77,7 +77,7 @@ def _deserialize_embedding(blob, dimensions):
     return list(struct.unpack(f"<{dimensions}f", blob[:size]))
 
 
-def get_engine_status(model_name="all-MiniLM-L6-v2", db_path=None):
+def get_engine_status(model_name="BAAI/bge-small-zh-v1.5", db_path=None):
     """
     检查向量搜索当前可用状态。
 
@@ -134,7 +134,7 @@ def _cosine_similarity(a, b):
     return dot / (mag_a * mag_b)
 
 
-def search_vector(query, limit=10, model_name="all-MiniLM-L6-v2", db_path=None):
+def search_vector(query, limit=10, model_name="BAAI/bge-small-zh-v1.5", db_path=None):
     """
     向量语义搜索。
 
