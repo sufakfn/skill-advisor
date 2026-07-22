@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '0 2 * * 1'
   workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/**'
+      - 'data/**'
 
 permissions:
   contents: write
