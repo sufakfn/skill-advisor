@@ -8,6 +8,7 @@ on:
     paths:
       - 'scripts/**'
       - 'data/**'
+      - '.github/workflows/sync_skills.yml'
 
 permissions:
   contents: write
