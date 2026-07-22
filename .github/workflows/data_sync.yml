@@ -9,5 +9,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "Hello from GitHub Actions"
-      - run: python --version
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check files
+        run: |
+          ls -la
+          ls -la data/ 2>/dev/null || echo "no data dir"
+
+      - name: Test Python
+        run: |
+          python -c "print('Python works')"
+          python -c "import sqlite3; print('sqlite3 works')"
+
+      - name: Check DB
+        run: |
+          python -c "
+          import sqlite3, os
+          db = 'data/skill-advisor.db'
+          if os.path.exists(db):
+              conn = sqlite3.connect(db)
+              total = conn.execute('SELECT COUNT(*) FROM skills_merged').fetchone()[0]
+              print(f'DB OK: {total} skills')
+              conn.close()
+          else:
+              print('DB NOT FOUND')
+              import os
+              for f in os.listdir('data'):
+                  print(f'  {f}')
+          "
