@@ -315,3 +315,52 @@ python ~/.claude/skills/skill-advisor-skill-recommender/scripts/skill_advisor_v2
 | `advisor.py` | Context Advisor（项目上下文感知） | **有项目目录时** |
 | `profession_packs.py` | 职业合集包管理 | **用户说身份时** |
 | `build_knowledge_base.py` | 知识库构建器 | 刷新数据源时 |
+| `setup.sh` | 首次使用配置 | **首次使用时自动运行** |
+| `incremental_update.py` | 增量更新 | CI 自动同步时 |
+| `backfill_descriptions.py` | 描述回补 | CI 自动同步时 |
+| `build_vectors.py` | 向量重建 | CI 自动同步时 |
+
+## 首次使用（自动配置）
+
+当用户首次使用本技能时，Claude 应自动运行配置脚本：
+
+```bash
+bash ~/.claude/skills/skill-advisor/scripts/setup.sh
+```
+
+配置完成后输出：
+```
+auto-update configured successfully
+```
+
+此脚本会：
+1. 创建 `~/.claude/hooks/post_session_start.sh`（如果不存在）
+2. 添加 skill-advisor 的自动更新命令
+3. 以后每次启动 Claude Code 时自动 `git pull` 拉取最新数据
+
+## 数据更新
+
+| 方式 | 触发 | 命令 |
+|------|------|------|
+| **自动** | 每周一 02:00 UTC | GitHub Actions 自动增量更新 + git push |
+| **自动** | 每次启动 Claude Code | hook 自动 `git pull` |
+| **手动** | 用户想立即更新 | `cd ~/.claude/skills/skill-advisor && git pull` |
+
+## 用户命令（CLI）
+
+安装后，用户可直接使用 `skill-advisor` 命令：
+
+```bash
+# 搜索技能（每次启动自动检查更新）
+skill-advisor search "react 最佳实践"
+skill-advisor search "做个演示" --limit 5
+
+# 手动同步最新数据
+skill-advisor sync
+
+# 查看统计
+skill-advisor stats
+
+# 重建向量索引（安装向量依赖后）
+skill-advisor rebuild-vectors
+```
