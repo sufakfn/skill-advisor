@@ -468,6 +468,7 @@ ADVISOR_STATE_FILE = CACHE_DIR / "advisor_state.json"
 
 
 def load_advisor_state():
+    """加载推荐状态（上次推荐时间、已忽略的推荐等）"""
     if ADVISOR_STATE_FILE.exists():
         try:
             return json.loads(ADVISOR_STATE_FILE.read_text(encoding="utf-8"))
@@ -477,6 +478,7 @@ def load_advisor_state():
 
 
 def save_advisor_state(state):
+    """保存推荐状态到本地 JSON 文件"""
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     ADVISOR_STATE_FILE.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -498,6 +500,7 @@ def should_recommend(ctx, force=False):
 
 
 def mark_recommended(ctx):
+    """标记已推荐（记录推荐时间，避免重复推荐）"""
     state = load_advisor_state()
     project_key = f"{ctx.get('path', '')}:{ctx.get('stage', '')}"
     state.setdefault("last_recommendations", {})[project_key] = time.time()

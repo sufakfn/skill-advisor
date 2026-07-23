@@ -140,6 +140,7 @@ def trigger_workflow(workflow_file="sync_skills.yml", full_rebuild=False, headle
 
 
 def main():
+    """浏览器触发器主入口 — 通过 Playwright 自动化操作 GitHub 网页触发 workflow"""
     parser = argparse.ArgumentParser(description="GitHub Workflow 浏览器触发器")
     parser.add_argument("--workflow", default="sync_skills.yml", help="workflow 文件名")
     parser.add_argument("--full-rebuild", action="store_true", help="强制全量重建")

@@ -804,6 +804,7 @@ def merge_all_sources(conn, incremental=False):
 
     # 辅助函数
     def add_skill(name, desc, source, installs=0, stars=0, topics=None, url="", cn_aliases=None):
+        """添加技能到合并字典（自动去重，保留更高质量的描述）"""
         norm = normalize_name(name)
         if not norm or len(norm) < 2:
             return
@@ -1076,6 +1077,7 @@ def show_stats(conn):
 # ============================================================
 
 def main():
+    """缓存生成器主入口 — 从多个数据源拉取技能数据，去重合并到 SQLite"""
     import argparse
     parser = argparse.ArgumentParser(description="skill-advisor 缓存生成器")
     parser.add_argument("--source", choices=["clawhub", "skills_sh", "github_topic", "github_code", "local", "merge", "all"], default="all")

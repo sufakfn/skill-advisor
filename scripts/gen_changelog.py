@@ -7,6 +7,7 @@ DB = Path(__file__).parent.parent / "data" / "skill-advisor.db"
 CHANGELOG = Path(__file__).parent.parent / "CHANGELOG.md"
 
 def generate():
+    """生成变更日志 — 对比更新前后的数据库状态，输出变更摘要"""
     conn = sqlite3.connect(str(DB))
     conn.row_factory = sqlite3.Row
     total = conn.execute("SELECT COUNT(*) FROM skills_merged").fetchone()[0]

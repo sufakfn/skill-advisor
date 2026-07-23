@@ -167,6 +167,7 @@ def incremental_update(github_token=None, db_path=None, full=False):
 
 
 def main():
+    """增量更新主入口 — 在已有数据基础上补充新技能，不重复已有工作"""
     parser = argparse.ArgumentParser(description="skill-advisor 增量更新")
     parser.add_argument("--db", default=str(DB_PATH), help="数据库路径")
     parser.add_argument("--github-token", default=os.environ.get("GITHUB_TOKEN", ""), help="GitHub Token")

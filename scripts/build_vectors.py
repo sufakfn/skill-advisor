@@ -200,6 +200,7 @@ def build_all(conn=None, model_name="BAAI/bge-small-zh-v1.5", force=False, incre
     batch_ids = []
 
     def flush_batch():
+        """批量写入向量到数据库（每 100 条提交一次）"""
         nonlocal built, batch_texts, batch_ids
         if not batch_texts:
             return
@@ -321,6 +322,7 @@ def show_stats(db_path=None):
 
 
 def main():
+    """向量索引构建器主入口 — 对有描述的技能生成嵌入向量"""
     parser = argparse.ArgumentParser(description="向量索引构建器")
     parser.add_argument("--db", default=str(DB_PATH), help="数据库路径")
     parser.add_argument("--model", default="BAAI/bge-small-zh-v1.5", help="嵌入模型名")

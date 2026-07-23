@@ -242,6 +242,7 @@ def cmd_stats():
 
 
 def main():
+    """CLI 主入口 — 支持 search/sync/stats/rebuild-vectors/warm-up 命令"""
     import os
     # 离线模式，避免网络检查延迟
     os.environ.setdefault("HF_HUB_OFFLINE", "1")

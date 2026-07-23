@@ -209,6 +209,7 @@ def backfill(db_path=None, limit=None, workers=4, dry_run=False):
         merged_map[row[1]] = row[0]
 
     def worker_fn(row):
+        """单个工作线程 — 尝试多种路径下载 SKILL.md 并提取描述"""
         return process_one_skill(row, dry_run)
 
     batch = []
@@ -348,6 +349,7 @@ def show_stats(db_path=None):
 
 
 def main():
+    """描述回补主入口 — 从 GitHub raw URL 下载 SKILL.md 补全技能描述"""
     parser = argparse.ArgumentParser(description="回补 skills.sh 技能描述")
     parser.add_argument("--db", default=str(DB_PATH), help="数据库路径")
     parser.add_argument("--limit", type=int, default=None, help="只处理前 N 条")

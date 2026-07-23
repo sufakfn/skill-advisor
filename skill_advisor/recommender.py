@@ -90,6 +90,7 @@ class SkillRecommender:
     """
 
     def __init__(self, db_path=None):
+        """初始化推荐引擎，可指定自定义数据库路径"""
         self.db_path = Path(db_path) if db_path else DEFAULT_DB_PATH
 
     def recommend(self, user_input):
