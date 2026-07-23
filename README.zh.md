@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-3776AB.svg)](https://www.python.org/)
-[![Skills](https://img.shields.io/badge/技能-16,600%2B-green.svg)](data/skill-advisor.db)
+[![Skills](https://img.shields.io/badge/技能-17,700%2B-green.svg)](data/skill-advisor.db)
 
 [English](README.md)
 
@@ -31,7 +31,7 @@ skill-advisor 推荐:
 
 - 🔍 **智能搜索** — 自然语言查询，中英文均支持 (基于 SQLite FTS5)
 - 📦 **职业合集包** — 16 种身份场景精选包（教师/PM/设计师/HR/律师/医生等）
-- 🌐 **16,800+ 技能** — 数据源: ClawHub / skills.sh / GitHub（持续增长）
+- 🌐 **17,700+ 技能** — 数据源: ClawHub / skills.sh / GitHub（持续增长）
 - ⚡ **< 10ms 响应** — 本地 SQLite 缓存，离线可用
 - 🔄 **在线兜底** — 本地未命中时自动搜索 skills.sh + ClawHub
 - 🤝 **跨智能体** — 兼容 Claude Code、Cursor、Codex CLI、Gemini CLI 等任何支持 SKILL.md 的 agent
@@ -85,7 +85,7 @@ pytest tests/ -v          # 运行测试
 ### 技术栈
 
 - **搜索**: SQLite FTS5 (trigram 分词) + LIKE 中文兜底
-- **数据**: 16,874+ 技能来自 6 个数据源
+- **数据**: 17,700+ 技能来自 6 个数据源
 - **响应速度**: < 10ms
 - **离线可用**: 本地 SQLite 缓存
 - **跨智能体**: 兼容 Claude Code、Cursor、Codex CLI、Gemini CLI
@@ -106,7 +106,7 @@ pytest tests/ -v          # 运行测试
 │    "数学老师" → 教师包 (8个技能 + 组合指南)               │
 │                                                          │
 │  第二层: 语义搜索 (SQLite FTS5)                          │
-│    本地 16,800+ 技能 → < 10ms 响应                       │
+│    本地 17,700+ 技能 → < 10ms 响应                       │
 │                                                          │
 │  第三层: 在线兜底                                        │
 │    skills.sh API + ClawHub API                          │
@@ -127,7 +127,7 @@ pytest tests/ -v          # 运行测试
 | ClawHub | ~99 | 完整描述+标签+下载量 |
 | Anthropic Marketplace | ~23 | 官方 Claude Code 插件/技能/智能体 |
 | 本地已安装 | ~18 | 自动扫描 |
-| **去重后总计** | **~16,874** | URL + 名称归一化去重后 |
+| **去重后总计** | **~17,700** | URL + 名称归一化去重后 |
 
 ---
 

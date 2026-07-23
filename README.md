@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-3776AB.svg)](https://www.python.org/)
-[![Skills](https://img.shields.io/badge/skills-16,600%2B-green.svg)](data/skill-advisor.db)
+[![Skills](https://img.shields.io/badge/skills-17,700%2B-green.svg)](data/skill-advisor.db)
 [![CI](https://github.com/sufakfn/skill-advisor/workflows/CI/badge.svg)](https://github.com/sufakfn/skill-advisor/actions)
 [![PyPI](https://img.shields.io/pypi/v/skill-advisor.svg)](https://pypi.org/project/skill-advisor/)
 [![Contributors](https://img.shields.io/github/contributors/sufakfn/skill-advisor.svg)](https://github.com/sufakfn/skill-advisor/graphs/contributors)
@@ -33,7 +33,7 @@ skill-advisor: → unit-test (auto-generate exams)
 
 - 🔍 **Smart Search** — Natural language query in English or Chinese (powered by SQLite FTS5)
 - 📦 **Profession Packs** — 16 curated packs for teachers, PMs, designers, HR, lawyers, doctors, etc.
-- 🌐 **16,800+ Skills** — From ClawHub, skills.sh, GitHub (continuously growing)
+- 🌐 **17,700+ Skills** — From ClawHub, skills.sh, GitHub (continuously growing)
 - ⚡ **< 10ms Response** — Local SQLite cache, works offline
 - 🔄 **Online Fallback** — Auto-searches skills.sh + ClawHub when local cache misses
 - 🤖 **Cross-Agent** — Works with Claude Code, Cursor, Codex CLI, Gemini CLI, and any SKILL.md-compatible agent
@@ -88,7 +88,7 @@ pytest tests/ -v          # run tests
 ### Tech Stack
 
 - **Search**: SQLite FTS5 (trigram tokenizer) + LIKE fallback for Chinese
-- **Data**: 16,874+ skills from 6 sources (ClawHub, skills.sh, GitHub, Anthropic, local)
+- **Data**: 17,700+ skills from 6 sources (ClawHub, skills.sh, GitHub, Anthropic, local)
 - **Response time**: < 10ms per query
 - **Offline capable**: local SQLite cache, no internet required for search
 - **Cross-agent**: works with Claude Code, Cursor, Codex CLI, Gemini CLI, and any SKILL.md-compatible agent
@@ -109,7 +109,7 @@ User Input
 │    "Math teacher" → teacher pack (8 skills + guide)      │
 │                                                          │
 │  Layer 2: Semantic Search (SQLite FTS5)                  │
-│    Local 16,800+ skills → < 10ms response                │
+│    Local 17,700+ skills → < 10ms response                │
 │                                                          │
 │  Layer 3: Online Fallback                                │
 │    skills.sh API + ClawHub API                           │
@@ -130,7 +130,7 @@ Ranked Recommendations (required / suggested / later / best combo)
 | ClawHub | ~99 | Full descriptions + tags + downloads |
 | Anthropic Marketplace | ~23 | Official Claude Code plugins/skills/agents |
 | Local installed | ~18 | Auto-scanned |
-| **Total (deduplicated)** | **~16,874** | After URL + name normalization |
+| **Total (deduplicated)** | **~17,700** | After URL + name normalization |
 
 ---
 

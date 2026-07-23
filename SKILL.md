@@ -1,13 +1,13 @@
 ---
-name: "skill-advisor（技能顾问）— 语义搜索+主动推荐+职业包,智能匹配16,600+技能"
+name: "skill-advisor（技能顾问）— 语义搜索+主动推荐+职业包,智能匹配17,700+技能"
 description: "当用户说'推荐技能'、'我要做XXX'、'需要什么skill'、'有什么好用的'、'我是XXX给我推荐'、'帮我选技能'、'安装技能包'时使用。"
 ---
 
-# 技能顾问（skill-advisor）v6.0.0
+# 技能顾问（skill-advisor）v6.1.0
 
 ## 功能
 
-根据用户的**身份、职业、场景或具体需求**，从 16,600+ 技能中智能推荐，按4个模块输出。
+根据用户的**身份、职业、场景或具体需求**，从 17,700+ 技能中智能推荐，按4个模块输出。
 
 **v5.1 新增三大能力：**
 1. 🔍 **语义搜索** —— 自然语言描述 → 精准匹配技能（"做个演示" 也能命中 PPT 技能）
@@ -298,7 +298,7 @@ python ~/.claude/skills/skill-advisor-skill-recommender/scripts/skill_advisor_v2
 | **ClawHub** | ~99 | ClawHub API 按下载量排序 | 热门精选技能 |
 | **Anthropic Marketplace** | ~23 | GitHub API 获取官方插件 | 官方 Claude Code 技能 |
 | **本地已安装** | ~18 | 自动扫描 ~/.claude/skills/ | 用户已安装的技能 |
-| **去重后总计** | **~16,874** | URL + 名称归一化去重 | 持续增长 |
+| **去重后总计** | **~~17,700** | URL + 名称归一化去重 | 持续增长 |
 | **Anthropic Marketplace** | ~23 | GitHub API 获取官方插件 | 官方 Claude Code 技能 |
 | **职业合集包** | 16 个 | profession_packs.py PROFESSION_PACKS | 一键安装全套 |
 | **Context 规则** | 6 阶段 × N 技术栈 | advisor.py STAGE/TECHSTACK | 项目感知推荐 |
