@@ -320,31 +320,33 @@ python ~/.claude/skills/skill-advisor-skill-recommender/scripts/skill_advisor_v2
 | `backfill_descriptions.py` | 描述回补 | CI 自动同步时 |
 | `build_vectors.py` | 向量重建 | CI 自动同步时 |
 
-## 首次使用（自动配置）
+## 数据更新
 
-当用户首次使用本技能时，Claude 应自动运行配置脚本：
+| 方式 | 触发 | 说明 |
+|------|------|------|
+| **自动** | 每周一 02:00 UTC | GitHub Actions 自动增量更新 + git push |
+| **手动** | 用户想更新时 | `skill-advisor sync` 或 `git pull` |
+| **提醒** | 数据库超过 7 天未更新 | 使用时提示用户更新 |
+
+### 手动更新
+
+```bash
+# 方式 1：统一命令（推荐）
+skill-advisor sync
+
+# 方式 2：git pull
+cd ~/.claude/skills/skill-advisor && git pull
+```
+
+### 首次使用检查
+
+首次使用时，建议运行配置脚本检查数据库状态：
 
 ```bash
 bash ~/.claude/skills/skill-advisor/scripts/setup.sh
 ```
 
-配置完成后输出：
-```
-auto-update configured successfully
-```
-
-此脚本会：
-1. 创建 `~/.claude/hooks/post_session_start.sh`（如果不存在）
-2. 添加 skill-advisor 的自动更新命令
-3. 以后每次启动 Claude Code 时自动 `git pull` 拉取最新数据
-
-## 数据更新
-
-| 方式 | 触发 | 命令 |
-|------|------|------|
-| **自动** | 每周一 02:00 UTC | GitHub Actions 自动增量更新 + git push |
-| **自动** | 每次启动 Claude Code | hook 自动 `git pull` |
-| **手动** | 用户想立即更新 | `cd ~/.claude/skills/skill-advisor && git pull` |
+如果数据库超过 7 天未更新，会提示用户运行 `git pull`。
 
 ## 用户命令（CLI）
 
