@@ -24,23 +24,23 @@
 
 ## 😤 Sound Familiar?
 
-❌ Spent 30 minutes on GitHub looking for a "PPT" skill, found nothing useful
-❌ Installed 50 AI skills, only use 5, the rest collect dust
-❌ Don't know what to install for a "React project", searched all day
-❌ Asked AI "recommend some skills", got a bunch of outdated links
-❌ Want to make short videos, need 4 different apps for editing/voiceover/subtitles/covers
+- ❌ Spent 30 minutes on GitHub looking for a "PPT" skill, found nothing useful
+- ❌ Installed 50 AI skills, only use 5, the rest collect dust
+- ❌ Don't know what to install for a "React project", searched all day
+- ❌ Asked AI "recommend some skills", got a bunch of outdated links
+- ❌ Want to make short videos, need 4 different apps for editing/voiceover/subtitles/covers
 
 ## ✅ skill-advisor Changes Everything:
 
-🎯 Say "make a presentation" → Instantly recommends PPT skills (not keyword matching! semantic understanding)
-🎯 Say "I'm a video creator" → Recommends full toolkit from scripting to multi-platform distribution
-🎯 Say "deploy to K8s" → Recommends Docker/K8s/monitoring/logging stack
-🎯 Say "money-making blog" → Recommends full workflow: build + SEO + content + monetization
-🎯 Say "AI customer service" → Recommends full stack: LLM + knowledge base + UI + monitoring
+- 🎯 Say "make a presentation" → Instantly recommends PPT skills (not keyword matching! semantic understanding)
+- 🎯 Say "I'm a video creator" → Recommends full toolkit from scripting to multi-platform distribution
+- 🎯 Say "deploy to K8s" → Recommends Docker/K8s/monitoring/logging stack
+- 🎯 Say "money-making blog" → Recommends full workflow: build + SEO + content + monetization
+- 🎯 Say "AI customer service" → Recommends full stack: LLM + knowledge base + UI + monitoring
 
-💡 Not keyword search — it truly "understands" you
-💡 Every recommendation comes with a reason
-💡 Best combinations tell you "why these work together"
+- 💡 Not keyword search — it truly "understands" you
+- 💡 Every recommendation comes with a reason
+- 💡 Best combinations tell you "why these work together"
 
 ---
 
