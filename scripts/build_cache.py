@@ -90,7 +90,7 @@ SKILLS_SH_KEYWORDS = [
     "theme", "icon", "font", "color", "animation", "3d", "vr", "ar", "blockchain", "web3",
 ]
 
-# GitHub Topic 搜索关键词 (借鉴 SkillFinder)
+# GitHub Topic 搜索关键词 (多源爬取)
 GITHUB_TOPICS = [
     "claude-skill", "claude-code-skill", "claude-skills", "claude-code-skills",
     "openclaw-skill", "codex-skill", "codex-skills", "agent-skill", "agent-skills",
@@ -476,7 +476,7 @@ def parse_skill_md_frontmatter(content):
 
 def fetch_github_topics(conn, token, topics=None):
     """
-    GitHub Topic 搜索 — 借鉴 SkillFinder 的 topic_crawler
+    GitHub Topic 搜索 — 多源爬取 的 topic_crawler
 
     流程:
       1. 按 topic 搜索仓库 (每个topic最多1000个)
