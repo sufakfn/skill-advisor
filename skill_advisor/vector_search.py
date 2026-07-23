@@ -43,6 +43,15 @@ _model_name = None
 _dimensions = None
 
 
+def warm_up():
+    """预加载模型（避免首次搜索等待）"""
+    import os
+    # 离线模式，不检查网络
+    os.environ.setdefault("HF_HUB_OFFLINE", "1")
+    model = _load_model()
+    return model is not None
+
+
 def _load_model(model_name="BAAI/bge-small-zh-v1.5"):
     """懒加载 sentence-transformers 模型（全局单例）"""
     global _model, _model_name, _dimensions
@@ -50,6 +59,9 @@ def _load_model(model_name="BAAI/bge-small-zh-v1.5"):
         return _model
 
     try:
+        import os
+        # 离线模式，避免网络检查延迟
+        os.environ.setdefault("HF_HUB_OFFLINE", "1")
         from sentence_transformers import SentenceTransformer
     except ImportError:
         return None

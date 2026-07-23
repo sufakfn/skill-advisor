@@ -17,11 +17,113 @@ from pathlib import Path
 
 # 默认数据库路径: 包内 data/ 目录
 PACKAGE_DIR = Path(__file__).parent.parent
-DEFAULT_DB_PATH = PACKAGE_DIR / "data" / "skills.db"
+DEFAULT_DB_PATH = PACKAGE_DIR / "data" / "skill-advisor.db"
 
 # 在线搜索端点
 SKILLS_SH_API = "https://skills.sh/api/search"
 CLAWHUB_API = "https://clawhub.ai/api/v1/skills"
+
+# 职业关键词映射
+PROFESSION_KEYWORDS = {
+    "teacher": ["老师", "教师", "教授", "讲师", "中学", "小学", "幼儿园"],
+    "developer": ["程序员", "工程师", "码农", "开发"],
+    "product-manager": ["产品经理", "产品总监", "PM", "产品专员"],
+    "designer": ["设计师", "UI", "UX", "美工", "视觉"],
+    "hr": ["HR", "人事", "人力资源", "招聘", "薪酬"],
+    "finance": ["会计", "财务", "出纳", "审计", "税务"],
+    "sales": ["销售", "BD", "客户", "转化"],
+    "lawyer": ["律师", "法务", "合同"],
+    "doctor": ["医生", "医师", "护士", "医疗", "临床"],
+    "student": ["学生", "大学生", "研究生", "博士生"],
+    "investor": ["投资", "炒股", "基金"],
+    "ecommerce": ["电商", "淘宝", "京东", "拼多多", "开店"],
+    "content-creator": ["自媒体", "博主", "UP主", "主播", "公众号"],
+    "writer": ["写作", "作家", "写手", "作者"],
+    "job-seeker": ["求职", "找工作", "面试", "跳槽"],
+}
+
+
+def _detect_profession_and_pack(query, db_path=None):
+    """检测职业身份并返回推荐技能列表"""
+    if not query or len(query) < 2:
+        return None
+
+    # 检测职业
+    detected_profession = None
+    for profession, keywords in PROFESSION_KEYWORDS.items():
+        for kw in keywords:
+            if kw in query:
+                detected_profession = profession
+                break
+        if detected_profession:
+            break
+
+    if not detected_profession:
+        return None
+
+    # 从数据库获取推荐技能
+    if db_path is None:
+        db_path = DEFAULT_DB_PATH
+
+    try:
+        conn = sqlite3.connect(str(db_path))
+        conn.row_factory = sqlite3.Row
+
+        # 职业对应的搜索词
+        profession_terms = {
+            "teacher": ["test", "exam", "slide", "presentation", "education"],
+            "developer": ["code", "programming", "development", "api", "git"],
+            "product-manager": ["product", "roadmap", "prd", "research", "analysis"],
+            "designer": ["design", "ui", "ux", "visual", "canvas", "image"],
+            "hr": ["excel", "document", "resume", "hr", "recruitment"],
+            "finance": ["excel", "finance", "stock", "financial", "model"],
+            "sales": ["sales", "crm", "excel", "presentation", "email"],
+            "lawyer": ["contract", "legal", "document", "review"],
+            "doctor": ["research", "medical", "health", "documentation"],
+            "student": ["research", "note", "study", "presentation", "writing"],
+            "investor": ["stock", "finance", "analysis", "research", "market"],
+            "ecommerce": ["shop", "product", "marketing", "copywriting"],
+            "content-creator": ["wechat", "video", "content", "writing"],
+            "writer": ["writing", "content", "document", "research"],
+            "job-seeker": ["resume", "interview", "presentation"],
+        }
+
+        search_terms = profession_terms.get(detected_profession, [])
+        if not search_terms:
+            conn.close()
+            return None
+
+        results = []
+        seen = set()
+        for term in search_terms:
+            rows = conn.execute("""
+                SELECT name, description, installs, quality_score
+                FROM skills_merged
+                WHERE (name LIKE ? OR description LIKE ? OR topics LIKE ?)
+                AND description != ''
+                ORDER BY quality_score DESC, installs DESC
+                LIMIT 5
+            """, (f"%{term}%", f"%{term}%", f"%{term}%")).fetchall()
+
+            for row in rows:
+                name = row["name"]
+                if name not in seen:
+                    seen.add(name)
+                    results.append({
+                        "name": name,
+                        "description": (row["description"] or "")[:200],
+                        "installs": row["installs"] or 0,
+                        "quality_score": row["quality_score"] or 0,
+                        "source": "profession-pack",
+                        "profession": detected_profession,
+                    })
+
+        conn.close()
+        results.sort(key=lambda x: (x["quality_score"], x["installs"]), reverse=True)
+        return results[:10] if results else None
+
+    except Exception:
+        return None
 
 
 def search_local(query, limit=10, db_path=None):
@@ -254,6 +356,17 @@ def search_hybrid(query, limit=10, db_path=None):
     """
     start = time.time()
 
+    # 0. 职业身份检测（优先返回职业包）
+    profession_result = _detect_profession_and_pack(query, db_path)
+    if profession_result:
+        elapsed = (time.time() - start) * 1000
+        return {
+            "results": profession_result,
+            "sources": {"vector": 0, "fts5+like": 0},
+            "elapsed_ms": round(elapsed, 1),
+            "engine": "profession-pack"
+        }
+
     # 1. FTS5 + LIKE 召回（现有逻辑）
     fts_results = search_local(query, limit=limit, db_path=db_path)
 
@@ -288,16 +401,19 @@ def search_hybrid(query, limit=10, db_path=None):
             r["_from_vector"] = False
             merged.append(r)
 
-    # 4. 最终重排
+    # 4. 最终重排（优化排序算法）
     for r in merged:
         quality_norm = min(r.get("quality_score", 0) / 100.0, 1.0)
         relevance = r.get("relevance", 0.0)
+        installs_norm = min(r.get("installs", 0) / 10000.0, 1.0)
+
         if r.get("_from_vector"):
             # 向量结果：relevance 来自余弦相似度（0~1）
-            r["_final_score"] = 0.7 * relevance + 0.3 * quality_norm
+            # 优化：加入安装量权重，避免高质量但冷门的技能被埋没
+            r["_final_score"] = 0.6 * relevance + 0.25 * quality_norm + 0.15 * installs_norm
         else:
-            # FTS5 结果：relevance 来自 bm25（已归一化为正值）
-            r["_final_score"] = 0.5 * relevance + 0.5 * quality_norm
+            # FTS5 结果：relevance 来自 bm25
+            r["_final_score"] = 0.4 * relevance + 0.35 * quality_norm + 0.25 * installs_norm
 
     merged.sort(key=lambda x: x.get("_final_score", 0), reverse=True)
     merged = merged[:limit]

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 skill-advisor CLI — 统一入口，支持搜索、更新、统计。
 
@@ -14,6 +15,18 @@ skill-advisor CLI — 统一入口，支持搜索、更新、统计。
   - 超过则后台 git pull（不阻塞搜索）
   - 有新数据 → 增量重建向量索引
 """
+
+import os
+import sys
+
+# 修复 Windows GBK 编码
+if sys.platform == "win32":
+    os.environ.setdefault("PYTHONIOENCODING", "utf-8")
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, OSError):
+        pass
 
 import argparse
 import os
@@ -229,6 +242,10 @@ def cmd_stats():
 
 
 def main():
+    import os
+    # 离线模式，避免网络检查延迟
+    os.environ.setdefault("HF_HUB_OFFLINE", "1")
+
     parser = argparse.ArgumentParser(
         description="skill-advisor CLI — 智能技能推荐",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -239,6 +256,7 @@ def main():
   %(prog)s search "query" --no-sync  # 跳过自动同步
   %(prog)s sync                       # 手动同步最新数据
   %(prog)s stats                      # 显示统计
+  %(prog)s warm-up                    # 预加载模型（加速首次搜索）
         """
     )
 
@@ -261,6 +279,9 @@ def main():
     # rebuild-vectors
     subparsers.add_parser("rebuild-vectors", help="重建向量索引")
 
+    # warm-up
+    subparsers.add_parser("warm-up", help="预加载模型（加速首次搜索）")
+
     args = parser.parse_args()
 
     if args.command == "search":
@@ -273,6 +294,13 @@ def main():
     elif args.command == "rebuild-vectors":
         ok, msg = rebuild_vectors_safely()
         print(f"{'✅' if ok else '❌'} {msg}")
+    elif args.command == "warm-up":
+        # 预加载模型
+        from skill_advisor import warm_up
+        if warm_up():
+            print("✅ 模型预加载成功，后续搜索将更快")
+        else:
+            print("⚠️ 模型加载失败，向量搜索不可用（FTS5 搜索仍可用）")
     else:
         # 默认：如果没有子命令，把整个参数当作搜索词
         if len(sys.argv) > 1 and not sys.argv[1].startswith("-"):

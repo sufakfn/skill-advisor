@@ -14,13 +14,18 @@ __version__ = "6.1.0"
 __author__ = "skill-advisor contributors"
 
 from .recommender import SkillRecommender, recommend
-from .search import search_skills, search_local, get_stats
+from .search import search_skills, search_local, search_hybrid, get_stats
+from .vector_search import search_vector, get_engine_status, warm_up
 
 __all__ = [
     "SkillRecommender",
     "recommend",
     "search_skills",
     "search_local",
+    "search_hybrid",
+    "search_vector",
+    "get_engine_status",
     "get_stats",
+    "warm_up",
     "__version__",
 ]
