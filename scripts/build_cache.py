@@ -739,6 +739,9 @@ def scan_local_skills(conn):
         for d in sorted(base_dir.iterdir()):
             if not d.is_dir():
                 continue
+            # 跳过符号链接（路径遍历防护）
+            if d.is_symlink():
+                continue
             skill_md = d / "SKILL.md"
             if not skill_md.exists():
                 continue
@@ -905,6 +908,7 @@ def merge_all_sources(conn, incremental=False):
 
     # 补充 name_aliases: 从 FALLBACK_SKILLS intent 标签获取中文别名
     try:
+        import ast
         advisor_path = SCRIPT_DIR / "skill_advisor.py"
         if advisor_path.exists():
             content = advisor_path.read_text(encoding="utf-8")
@@ -912,9 +916,9 @@ def merge_all_sources(conn, incremental=False):
             if start > 0:
                 end = content.find("]\n\n", start)
                 if end > 0:
-                    exec_globals = {}
-                    exec(content[start:end + 1], exec_globals)
-                    for s in exec_globals.get("FALLBACK_SKILLS", []):
+                    # 使用 ast.literal_eval 替代 exec（安全解析）
+                    data = ast.literal_eval(content[start:end + 1])
+                    for s in data:
                         name = s.get("name", "")
                         intents = s.get("intent", [])
                         cn = [t for t in intents if any('一' <= c <= '鿿' for c in t)]

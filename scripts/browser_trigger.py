@@ -19,8 +19,8 @@ import time
 from pathlib import Path
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
 
-GITHUB_USER = "sufakfn"
-REPO = "skill-advisor"
+GITHUB_USER = os.environ.get("GITHUB_USER", "sufakfn")  # 从环境变量读取
+REPO = os.environ.get("GITHUB_REPO", "skill-advisor")   # 从环境变量读取
 PROFILE_DIR = Path.home() / ".skill-advisor-browser-profile"
 
 

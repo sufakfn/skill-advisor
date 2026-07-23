@@ -23,6 +23,11 @@ DEFAULT_DB_PATH = PACKAGE_DIR / "data" / "skill-advisor.db"
 SKILLS_SH_API = "https://skills.sh/api/search"
 CLAWHUB_API = "https://clawhub.ai/api/v1/skills"
 
+def escape_like(value):
+    """转义 LIKE 通配符（% 和 _）防止注入"""
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 # 职业关键词映射
 PROFESSION_KEYWORDS = {
     "teacher": ["老师", "教师", "教授", "讲师", "中学", "小学", "幼儿园"],

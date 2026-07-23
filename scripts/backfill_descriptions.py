@@ -89,6 +89,23 @@ def parse_frontmatter(content: str) -> tuple:
     return name, desc
 
 
+# SSRF 防护 - 允许的域名白名单
+ALLOWED_DOWNLOAD_DOMAINS = {
+    "raw.githubusercontent.com",
+    "github.com",
+}
+
+
+def _is_safe_url(url: str) -> bool:
+    """检查 URL 是否在允许的域名白名单内（SSRF 防护）"""
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        return parsed.hostname in ALLOWED_DOWNLOAD_DOMAINS
+    except Exception:
+        return False
+
+
 def download_skill_md(owner_repo: str, skill_name: str, timeout: int = 10) -> str:
     """
     尝试从 GitHub raw URL 下载 SKILL.md。
@@ -97,6 +114,11 @@ def download_skill_md(owner_repo: str, skill_name: str, timeout: int = 10) -> st
     for path_template in SKILL_MD_PATHS:
         path = path_template.format(skill_name=skill_name)
         url = f"https://raw.githubusercontent.com/{owner_repo}/HEAD/{path}"
+
+        # SSRF 防护：检查 URL 域名
+        if not _is_safe_url(url):
+            continue
+
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "skill-advisor-backfill/1.0"})
             with urllib.request.urlopen(req, timeout=timeout) as resp:

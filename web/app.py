@@ -2,6 +2,7 @@
 """skill-advisor Web UI — FastAPI + Jinja2"""
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -11,6 +12,16 @@ BASE_DIR = Path(__file__).parent
 DB_PATH = BASE_DIR.parent / "data" / "skill-advisor.db"
 
 app = FastAPI(title="skill-advisor", version="6.1.0")
+
+# CORS 配置 - 仅允许本地访问（安全）
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost", "http://127.0.0.1"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 

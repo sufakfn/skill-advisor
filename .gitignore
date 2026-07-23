@@ -35,3 +35,22 @@ data/github_topic*.db
 
 # Keep the main database
 !data/skill-advisor.db
+
+# Security: sensitive files
+.env
+.env.*
+*.key
+*.pem
+*.secret
+credentials*
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Security: IDE
+.idea/
+.vscode/
+
+# Security: OS
+.DS_Store
+Thumbs.db
