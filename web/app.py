@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent
-DB_PATH = BASE_DIR.parent / "data" / "skills.db"
+DB_PATH = BASE_DIR.parent / "data" / "skill-advisor.db"
 
 app = FastAPI(title="skill-advisor", version="6.1.0")
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")

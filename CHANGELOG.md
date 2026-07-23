@@ -53,5 +53,5 @@ teacher / product-manager / content-creator / designer / hr / finance / sales / 
 
 ---
 
-[Unreleased]: https://github.com/skill-advisor/skill-advisor/compare/v6.0.0...HEAD
-[6.0.0]: https://github.com/skill-advisor/skill-advisor/releases/tag/v6.0.0
+[Unreleased]: https://github.com/sufakfn/skill-advisor/compare/v6.0.0...HEAD
+[6.0.0]: https://github.com/sufakfn/skill-advisor/releases/tag/v6.0.0

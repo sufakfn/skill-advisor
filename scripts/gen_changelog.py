@@ -3,7 +3,7 @@ import sqlite3
 from pathlib import Path
 from datetime import datetime
 
-DB = Path(__file__).parent.parent / "data" / "skills.db"
+DB = Path(__file__).parent.parent / "data" / "skill-advisor.db"
 CHANGELOG = Path(__file__).parent.parent / "CHANGELOG.md"
 
 def generate():

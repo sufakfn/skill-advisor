@@ -39,7 +39,7 @@ dev = ["pytest>=7.0", "flake8", "build", "twine"]
 web = ["fastapi>=0.100", "uvicorn[standard]", "jinja2"]
 
 [project.scripts]
-skill-advisor = "skill_advisor.recommender:main"
+skill-advisor = "skill_advisor.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/skill-advisor/skill-advisor"

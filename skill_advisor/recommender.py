@@ -14,7 +14,7 @@ import urllib.request
 from pathlib import Path
 
 PACKAGE_DIR = Path(__file__).parent.parent
-DEFAULT_DB_PATH = PACKAGE_DIR / "data" / "skills.db"
+DEFAULT_DB_PATH = PACKAGE_DIR / "data" / "skill-advisor.db"
 
 # 职业关键词映射
 PROFESSION_MAP = [

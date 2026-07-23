@@ -28,7 +28,7 @@
 
 ### Bug 报告
 
-使用 [Bug 模板](https://github.com/skill-advisor/skill-advisor/issues/new?template=bug_report.md)，包含：
+使用 [Bug 模板](https://github.com/sufakfn/skill-advisor/issues/new?template=bug_report.md)，包含：
 
 - 清晰的问题描述
 - 复现步骤
@@ -37,7 +37,7 @@
 
 ### Feature 请求
 
-使用 [Feature 模板](https://github.com/skill-advisor/skill-advisor/issues/new?template=feature_request.md)，包含：
+使用 [Feature 模板](https://github.com/sufakfn/skill-advisor/issues/new?template=feature_request.md)，包含：
 
 - 功能描述
 - 使用场景
@@ -183,7 +183,7 @@ A: 运行 `python scripts/build_cache.py --github-token YOUR_TOKEN`
 
 ## 联系
 
-- 💬 讨论 → [GitHub Discussion](https://github.com/skill-advisor/skill-advisor/discussions)
-- 🐛 Bug → [Issue](https://github.com/skill-advisor/skill-advisor/issues)
+- 💬 讨论 → [GitHub Discussion](https://github.com/sufakfn/skill-advisor/discussions)
+- 🐛 Bug → [Issue](https://github.com/sufakfn/skill-advisor/issues)
 
 感谢你的贡献！🎉

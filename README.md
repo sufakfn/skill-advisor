@@ -5,9 +5,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-3776AB.svg)](https://www.python.org/)
 [![Skills](https://img.shields.io/badge/skills-16,600%2B-green.svg)](data/skill-advisor.db)
-[![CI](https://github.com/skill-advisor/skill-advisor/workflows/CI/badge.svg)](https://github.com/skill-advisor/skill-advisor/actions)
+[![CI](https://github.com/sufakfn/skill-advisor/workflows/CI/badge.svg)](https://github.com/sufakfn/skill-advisor/actions)
 [![PyPI](https://img.shields.io/pypi/v/skill-advisor.svg)](https://pypi.org/project/skill-advisor/)
-[![Contributors](https://img.shields.io/github/contributors/skill-advisor/skill-advisor.svg)](https://github.com/skill-advisor/skill-advisor/graphs/contributors)
+[![Contributors](https://img.shields.io/github/contributors/sufakfn/skill-advisor.svg)](https://github.com/sufakfn/skill-advisor/graphs/contributors)
 
 [中文文档](README.zh.md)
 
@@ -57,9 +57,9 @@ print(result["profession_pack"]["name"])
 
 ```bash
 # CLI usage
-skill-advisor "stock analysis"
-skill-advisor "react frontend"
-skill-advisor --stats        # database statistics
+skill-advisor search "stock analysis"
+skill-advisor search "react frontend"
+skill-advisor stats        # database statistics
 ```
 
 ### Option 2: Install as a Skill (for end users)
@@ -73,13 +73,13 @@ cp -r skill-advisor ~/.codex/skills/            # Codex CLI
 
 Then use it in any conversation:
 ```
-You: /skill-advisor "I want to make a presentation"
+You: /skill-advisor search "I want to make a presentation"
 ```
 
 ### Option 3: Install from source (for contributors)
 
 ```bash
-git clone https://github.com/skill-advisor/skill-advisor.git
+git clone https://github.com/sufakfn/skill-advisor.git
 cd skill-advisor
 pip install -e ".[dev]"
 pytest tests/ -v          # run tests

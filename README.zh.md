@@ -55,9 +55,9 @@ print(result["profession_pack"]["name"])
 
 ```bash
 # 命令行
-skill-advisor "股票分析"
-skill-advisor "react前端"
-skill-advisor --stats        # 数据库统计
+skill-advisor search "股票分析"
+skill-advisor search "react前端"
+skill-advisor stats        # 数据库统计
 ```
 
 ### 方式二: 作为 Skill 安装 (终端用户)
@@ -70,13 +70,13 @@ cp -r skill-advisor ~/.codex/skills/            # Codex CLI
 
 然后在对话中使用:
 ```
-你: /skill-advisor "我想做个PPT"
+你: /skill-advisor search "我想做个PPT"
 ```
 
 ### 方式三: 源码安装 (贡献者)
 
 ```bash
-git clone https://github.com/skill-advisor/skill-advisor.git
+git clone https://github.com/sufakfn/skill-advisor.git
 cd skill-advisor
 pip install -e ".[dev]"
 pytest tests/ -v          # 运行测试
