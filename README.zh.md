@@ -232,5 +232,4 @@ python scripts/build_cache.py --stats
 
 - [ClawHub](https://clawhub.ai) — 技能注册中心
 - [skills.sh](https://skills.sh) — 技能市场
-- [SkillFinder](https://github.com/yya007/SkillFinder) — 多源爬取灵感
 - [xingkongliang/skills-manager](https://github.com/xingkongliang/skills-manager) — SQLite 存储模式

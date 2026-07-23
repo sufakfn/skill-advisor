@@ -228,5 +228,4 @@ Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 - [ClawHub](https://clawhub.ai) — Skill registry
 - [skills.sh](https://skills.sh) — Skill marketplace
-- [SkillFinder](https://github.com/yya007/SkillFinder) — Inspiration for multi-source crawling
 - [xingkongliang/skills-manager](https://github.com/xingkongliang/skills-manager) — SQLite storage pattern
