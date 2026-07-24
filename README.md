@@ -224,22 +224,70 @@ llm-agent 接入大模型 → knowledge-base 让 AI 回答准确 → chat-ui 提
 
 ## 🚀 3 分钟上手
 
-### 方式一：作为 Skill 安装（推荐，终端用户）
+### 方式一：Agent 安装（推荐 ⭐）
 
-```bash
-# 克隆到你的智能体技能目录
-git clone https://github.com/sufakfn/skill-advisor.git ~/.claude/skills/skill-advisor
+**对 Agent 说**：
 
-# 然后在对话中使用：
-# 你: /skill-advisor search "我想做个演示"
-# AI: 🔴 必装: pptx（PPT制作）— 创建/编辑演示文稿
-#     🟡 建议: dataviz（数据可视化）— 往PPT里加图表
-#     ⭐ 最佳组合: pptx + dataviz + theme-factory
+```
+帮我安装这个 skill：https://github.com/sufakfn/skill-advisor
 ```
 
-支持：Claude Code / Cursor / Codex CLI / Gemini CLI / 任何 SKILL.md 兼容智能体
+Agent 会自动 clone 到正确目录，安装依赖，即可使用。
 
-### 方式二：pip 安装（开发者）
+**适用**：Claude Code / Codex CLI / Cursor / 任何支持 Agent Skills 的工具
+
+---
+
+### 方式二：Git 手动安装
+
+**Claude Code 用户**：
+```bash
+git clone https://github.com/sufakfn/skill-advisor.git ~/.claude/skills/skill-advisor
+```
+
+**Cursor 用户**：
+```bash
+git clone https://github.com/sufakfn/skill-advisor.git ~/.cursor/skills/skill-advisor
+```
+
+**Codex CLI 用户**：
+```bash
+git clone https://github.com/sufakfn/skill-advisor.git ~/.codex/skills/skill-advisor
+```
+
+**其他 Agent**：
+```bash
+git clone https://github.com/sufakfn/skill-advisor.git ~/.config/<你的agent>/skills/skill-advisor
+```
+
+安装后在对话中使用：
+```
+你: /skill-advisor search "我想做个演示"
+AI: 🔴 必装: pptx（PPT制作）— 创建/编辑演示文稿
+    🟡 建议: dataviz（数据可视化）— 往PPT里加图表
+    ⭐ 最佳组合: pptx + dataviz + theme-factory
+    💡 为什么这样组合？pptx 负责核心 → dataviz 加图表 → theme-factory 美化
+```
+
+---
+
+### 方式三：SKILL.md 模式（Agent 不支持 Skill 时）
+
+1. 下载 SKILL.md：
+```bash
+curl -o skill-advisor-SKILL.md https://raw.githubusercontent.com/sufakfn/skill-advisor/main/SKILL.md
+```
+
+2. 将 SKILL.md 作为项目规则：
+   - **Claude Code**：保存为 `.claude/CLAUDE.md`
+   - **Cursor**：保存到 `.cursorrules`
+   - **其他 Agent**：直接粘贴到对话中
+
+3. Agent 会按照 SKILL.md 中的指令执行推荐逻辑
+
+---
+
+### 方式四：pip 安装（开发者）
 
 ```bash
 pip install skill-advisor
@@ -256,7 +304,9 @@ result = recommend("我是产品经理")
 print(result["profession_pack"]["name"])  # → 产品经理包
 ```
 
-### 方式三：源码安装（贡献者）
+---
+
+### 方式五：源码安装（贡献者）
 
 ```bash
 git clone https://github.com/sufakfn/skill-advisor.git
